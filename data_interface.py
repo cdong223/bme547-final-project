@@ -49,6 +49,46 @@ def data_interface_window(username='NA'):
                       command=choose_files)
     file_btn.grid(column=2, row=1)  # Choose file button location
 
+    # Choose Processing Type Section
+    processing_type = StringVar()  # Variable for processing type
+    processing_type.set('hist')
+    hist_process = Radiobutton(upload_tab,
+                               text='Histogram Equalization',
+                               variable=processing_type,
+                               value='hist')
+    hist_process.grid(column=1,
+                      row=2,
+                      sticky=W,
+                      pady=5,
+                      padx=100)
+    cont_stretch = Radiobutton(upload_tab,
+                               text='Contrast Stretching',
+                               variable=processing_type,
+                               value='cont')
+    cont_stretch.grid(column=1,
+                      row=3,
+                      sticky=W,
+                      pady=5,
+                      padx=100)
+    log_comp = Radiobutton(upload_tab,
+                           text='Log Compression',
+                           variable=processing_type,
+                           value='log')
+    log_comp.grid(column=1,
+                  row=4,
+                  sticky=W,
+                  pady=5,
+                  padx=100)
+    inv_img = Radiobutton(upload_tab,
+                          text='Invert Image',
+                          variable=processing_type,
+                          value='inv')
+    inv_img.grid(column=1,
+                 row=5,
+                 sticky=W,
+                 pady=5,
+                 padx=100)
+
     # Display tab
 
     # Download tab
