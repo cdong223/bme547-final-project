@@ -89,6 +89,22 @@ def data_interface_window(username='NA'):
                  pady=5,
                  padx=100)
 
+    # Function to upload files selected
+    def upload_files():
+        print("Upload Files")
+
+    # Upload Selection Section
+    upload_btn = Button(upload_tab,
+                        text="Upload Files",
+                        bg="white",
+                        fg="black",
+                        command=upload_files)
+    upload_btn.grid(column=1,  # Choose file button location
+                    row=6,
+                    sticky=W,
+                    pady=5,
+                    padx=100)
+
     # Display tab
 
     # Download tab
