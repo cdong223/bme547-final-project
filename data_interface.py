@@ -12,6 +12,8 @@ def login_window():
 
     # Login command
     def validateLogin():
+        # user = UserMetrics.objects.raw({"_id": username.get()})
+        # if(user.count() == 0):
         if(username.get() == "bad"):  # TEMPORARY (future database connection)
             username_not_recognized()
         else:
@@ -22,6 +24,8 @@ def login_window():
 
     # New user command
     def validateNewUser():
+        # user = UserMetrics.objects.raw({"_id": username.get()})
+        # if(user.count() != 0):  
         if(username.get() == "bad"):  # TEMPORARY (future database connection)
             username_already_exists()
         else:
