@@ -4,10 +4,93 @@ from tkinter import filedialog
 from tkinter import scrolledtext
 
 
-def data_interface_window(username='NA'):
+# ---------------------------Login Screen--------------------------------
+def login_window():
+    # Initialize global variables
+    global login_screen
+    global username
 
+    # Login command
+    def validateLogin():
+        if(username.get() == "bad"):  # TEMPORARY (future database connection)
+            username_not_recognized()
+        else:
+            print("{} is logged in".format(username.get()))
+            login_screen.withdraw()
+            data_interface_window(username.get())
+            return
+
+    # New user command
+    def validateNewUser():
+        if(username.get() == "bad"):  # TEMPORARY (future database connection)
+            username_already_exists()
+        else:
+            print("{} is a new user".format(username.get()))
+            login_screen.withdraw()
+            data_interface_window(username.get())
+            print("close")
+            return
+
+    # Screen layout
+    login_screen = Tk()
+    login_screen.title("Login")
+    login_screen.geometry('300x200')
+
+    login_screen.grid_columnconfigure(0, weight=1)
+    login_screen.grid_columnconfigure(1, weight=1)
+    login_screen.grid_rowconfigure(0, weight=3)
+    login_screen.grid_rowconfigure(3, weight=1)
+    login_screen.grid_rowconfigure(5, weight=3)
+
+    usernameLabel = Label(login_screen, text="Enter Username:")
+    usernameLabel.grid(row=1, column=0, columnspan=2)
+    username = StringVar()
+    usernameEntry = Entry(login_screen, textvariable=username)
+    usernameEntry.grid(row=2, column=0, columnspan=2)
+
+    loginButton = Button(login_screen, text="Login", command=validateLogin)
+    loginButton.grid(row=4, column=0)
+    newButton = Button(login_screen, text="New User", command=validateNewUser)
+    newButton.grid(row=4, column=1)
+
+    login_screen.mainloop()
+    return
+
+
+# -------------------------Invalid Login Screen-----------------------------
+def username_not_recognized():
+    # Screen closed upon clicking "Ok" button
+    def exit():
+        invalid_screen.destroy()
+        return
+
+    # Screen layout
+    invalid_screen = Toplevel(login_screen)
+    invalid_screen.title("Invalid")
+    invalid_screen.geometry('200x100')
+    Label(invalid_screen, text="Username not recognized.").pack()
+    Button(invalid_screen, text="Ok", command=exit).pack()
+
+
+# -----------------------Invalid Registration Screen---------------------------
+def username_already_exists():
+    # Screen closed upon clicking "Ok" button
+    def exit():
+        invalid_screen.destroy()
+        return
+
+    # Screen layout
+    invalid_screen = Toplevel(login_screen)
+    invalid_screen.title("Invalid")
+    invalid_screen.geometry('200x100')
+    Label(invalid_screen, text="Username already exists.").pack()
+    Button(invalid_screen, text="Ok", command=exit).pack()
+
+
+# ------------------------------Main UI Window---------------------------------
+def data_interface_window(username='NA'):
     # Set-up UI window
-    window = Tk()
+    window = Toplevel(login_screen)
     window.title("{}'s Image Processing "  # Sets window title
                  "Application.".format(username))
     window.geometry('500x500')  # Sets window size
@@ -26,7 +109,7 @@ def data_interface_window(username='NA'):
     tab_control.add(download_tab, text="Download")
     tab_control.add(metrics_tab, text="User Metrics")
 
-    # Upload tab
+    # ----------------------------Upload tab--------------------------------
     # Function to choose files wanted to open
     def choose_files():  # Function for opening Files
         ftypes = [('Portable Graphics Format .png', '*.png'),
@@ -105,11 +188,11 @@ def data_interface_window(username='NA'):
                     pady=5,
                     padx=100)
 
-    # Display tab
+    # ----------------------------Display tab---------------------------------
 
-    # Download tab
+    # ----------------------------Download tab--------------------------------
 
-    # User Metrics tab
+    # ----------------------------User Metrics tab----------------------------
 
     # Run Window until close
     window.mainloop()
@@ -117,4 +200,4 @@ def data_interface_window(username='NA'):
 
 
 if __name__ == "__main__":
-    data_interface_window('sm642')
+    login_window()
