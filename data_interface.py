@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import scrolledtext
+from PIL import ImageTk, Image
+
 
 
 # ---------------------------Login Screen--------------------------------
@@ -192,11 +194,180 @@ def data_interface_window(username='NA'):
                     pady=5,
                     padx=100)
 
-    # ----------------------------Display tab---------------------------------
 
+    # ----------------------------Display tab---------------------------------
+    def left_display():  # find the picture according to the name
+        # Only dummy variables are used now, but should be easy to
+        # find image metrics if given image name
+        if image_name_1.get() == 'A':
+            path = "Apple.png"
+            timestamp = ttk.Label(display_tab,
+                                  text="Timestamp: {}".format(A[0]))
+            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(A[1]))
+            size = ttk.Label(display_tab, text="Size: {}".format(A[2]))
+        if image_name_1.get() == 'B':
+            path = "BD.jpg"
+            timestamp = ttk.Label(display_tab,
+                                  text="Timestamp: {}".format(B[0]))
+            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(B[1]))
+            size = ttk.Label(display_tab, text="Size: {}".format(B[2]))
+        if image_name_1.get() == 'C':
+            path = "Cat.jpg"
+            timestamp = ttk.Label(display_tab,
+                                  text="Timestamp: {}".format(C[0]))
+            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(C[1]))
+            size = ttk.Label(display_tab, text="Size: {}".format(C[2]))
+        print(path)
+        timestamp.grid(column=0, row=5, pady=5)
+        cpu.grid(column=0, row=6, pady=5)
+        size.grid(column=0, row=7, pady=5)
+        load = Image.open(path)
+        load = load.resize((150, 150), Image.ANTIALIAS)
+        render = ImageTk.PhotoImage(load)
+        img = Label(display_tab, image=render)
+        img.image = render
+        img.grid(column=0, row=4, pady=5)
+        return
+
+    def right_display():  # find the picture according to the name
+        if image_name_2.get() == 'A':
+            path = "Apple.png"
+            timestamp = ttk.Label(display_tab,
+                                  text="Timestamp: {}".format(A[0]))
+            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(A[1]))
+            size = ttk.Label(display_tab, text="Size: {}".format(A[2]))
+        if image_name_2.get() == 'B':
+            path = "BD.jpg"
+            timestamp = ttk.Label(display_tab,
+                                  text="Timestamp: {}".format(B[0]))
+            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(B[1]))
+            size = ttk.Label(display_tab, text="Size: {}".format(B[2]))
+            print(path)
+        if image_name_2.get() == 'C':
+            path = "Cat.jpg"
+            timestamp = ttk.Label(display_tab,
+                                  text="Timestamp: {}".format(C[0]))
+            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(C[1]))
+            size = ttk.Label(display_tab, text="Size: {}".format(C[2]))
+        print(path)
+        timestamp.grid(column=2, row=5, pady=5)
+        cpu.grid(column=2, row=6, pady=5)
+        size.grid(column=2, row=7, pady=5)
+        load = Image.open(path)
+        load = load.resize((150, 150), Image.ANTIALIAS)
+        render = ImageTk.PhotoImage(load)
+        img = Label(display_tab, image=render)
+        img.image = render
+        img.grid(column=2, row=4, pady=5)
+        return
+
+    A = ["2019/12/3", "1.5s", "600x600"]  # Dummy variables of image metrics
+    B = ["2019/12/4", "1.2s", "400x400"]
+    C = ["2019/12/5", "1.4s", "200x200"]
+
+    ttk.Separator(display_tab, orient=VERTICAL).grid(column=1, row=0,
+                                                     rowspan=10, sticky='ns')
+
+    choice_1 = ttk.Label(display_tab, text="Choose picture 1 from below")
+    choice_1.grid(column=0, row=1, padx=50, pady=5)
+    choice_2 = ttk.Label(display_tab, text="Choose picture 2 from below")
+    choice_2.grid(column=2, row=1, padx=50, pady=5)
+
+    image_list = ["A", "B", "C"]  # Need to read the actual list of image
+    image_name_1 = StringVar()
+    display_sel_1 = ttk.Combobox(display_tab, textvariable=image_name_1)
+    display_sel_1.grid(column=0, row=2, pady=5)
+    display_sel_1['values'] = image_list
+    display_sel_1.state(['readonly'])
+    image_name_2 = StringVar()
+    display_sel_2 = ttk.Combobox(display_tab, textvariable=image_name_2)
+    display_sel_2.grid(column=2, row=2, pady=5)
+    display_sel_2['values'] = image_list
+    display_sel_2.state(['readonly'])
+
+    ok_btn_left = ttk.Button(display_tab, text='ok', command=left_display)
+    ok_btn_left.grid(column=0, row=3, pady=5)
+    ok_btn_right = ttk.Button(display_tab, text='ok', command=right_display)
+    ok_btn_right.grid(column=2, row=3, pady=5)
     # ----------------------------Download tab--------------------------------
 
     # ----------------------------User Metrics tab----------------------------
+    # Retrieve metrics for given user from database
+    def get_metrics():
+        # user_entry = UserMetrics.objects.raw({"_id": username})
+        # user = user_entry[0]
+        # total_uploads = user.total_uploads
+        # total_hist_equal = user.total_hist_equal
+        # total_contrast_stretch = user.total_contrast_stretch
+        # total_log_comp = user.total_log_comp
+        # total_inv_img = user.total_inv_img
+        total_uploads = 6
+        total_hist_equal = 2
+        total_contrast_stretch = 1
+        total_log_comp = 0
+        total_inv_img = 3
+        return [total_uploads, total_hist_equal, total_contrast_stretch,
+                total_log_comp, total_inv_img]
+
+    # Command for Display Current User Metrics button
+    def button_action():
+        metrics = get_metrics()
+        upload_num.config(text=metrics[0])
+        hist_num.config(text=metrics[1])
+        contrast_num.config(text=metrics[2])
+        log_num.config(text=metrics[3])
+        invert_num.config(text=metrics[4])
+        return
+
+    # def on_tab_selected(event):
+    #     selected_tab = event.widget.select()
+    #     tab_text = event.widget.tab(selected_tab, "text")
+    #     if tab_text == "User Metrics":
+    #         print("Selected User Metrics tab")
+
+    metrics_tab.grid_columnconfigure(0, weight=1)
+    metrics_tab.grid_columnconfigure(1, weight=2)
+    metrics_tab.grid_rowconfigure(0, weight=3)
+    metrics_tab.grid_rowconfigure(2, weight=1)
+    metrics_tab.grid_rowconfigure(8, weight=3)
+
+    # Screen layout
+    button = ttk.Button(metrics_tab, text="Display Current User Metrics",
+                        command=button_action)
+    button.grid(row=1, column=0, columnspan=2)
+
+    upload_label = ttk.Label(metrics_tab,
+                             text="Total number of uploads by user: ")
+    upload_label.grid(row=3, column=0, sticky=E)
+    upload_num = ttk.Label(metrics_tab, text="")
+    upload_num.grid(row=3, column=1, sticky=W)
+
+    hist_label = ttk.Label(metrics_tab,
+                           text="# of times Histogram Equalization "
+                                "performed: ")
+    hist_label.grid(row=4, column=0, sticky=E)
+    hist_num = ttk.Label(metrics_tab, text="")
+    hist_num.grid(row=4, column=1, sticky=W)
+
+    contrast_label = ttk.Label(metrics_tab,
+                               text="# of times Contrast Stretching "
+                                    "performed: ")
+    contrast_label.grid(row=5, column=0, sticky=E)
+    contrast_num = ttk.Label(metrics_tab, text="")
+    contrast_num.grid(row=5, column=1, sticky=W)
+
+    log_label = ttk.Label(metrics_tab,
+                          text="# of times Log Compression performed: ")
+    log_label.grid(row=6, column=0, sticky=E)
+    log_num = ttk.Label(metrics_tab, text="")
+    log_num.grid(row=6, column=1, sticky=W)
+
+    invert_label = ttk.Label(metrics_tab,
+                             text="# of times Image Inversion performed: ")
+    invert_label.grid(row=7, column=0, sticky=E)
+    invert_num = ttk.Label(metrics_tab, text="")
+    invert_num.grid(row=7, column=1, sticky=W)
+    
 
     # Run Window until close
     window.mainloop()
