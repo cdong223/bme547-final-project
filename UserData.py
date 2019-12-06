@@ -3,12 +3,13 @@ from LogIn import LogIn
 
 
 class UserData(MongoModel):
-    username = fields.ReferenceField(LogIn)
-    image_name = fields.CharField(primary_key=True)
-    image = fields.ImageField()
-    upload_time = fields.DateTimeField()
-    processing_time = fields.FloatField(min_value=0.0)
+    username = fields.ReferenceField(LogIn, primary_key=True)
+    image_name = fields.ListField()
+    image = fields.ListField()
+    processing_time = fields.ListField()
     image_size = fields.ListField()
+    hist_data = fields.ListField()
+    upload_dat = fields.ListField()
 
 
 if __name__ == "__main__":
