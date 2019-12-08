@@ -9,12 +9,13 @@ app = Flask(__name__)
 
 
 def database_connection():
-    connect("DATABASE_KEY")
+    connect("mongodb+srv://dervil_dong_moavenzadeh_qi:BME54701@cluster0-"
+            "dykvj.mongodb.net/test?retryWrites=true&w=majority")
 
 
 # ----------------------------Login Screen--------------------------------
 def patient_exists(username):
-    user = UserMetrics.objects.raw({"_id": username})
+    user = LogIn.objects.raw({"_id": username})
     if(user.count() == 0):
         return False
     return True
