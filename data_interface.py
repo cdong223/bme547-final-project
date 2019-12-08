@@ -115,17 +115,39 @@ def data_interface_window(username='NA'):
     tab_control.add(metrics_tab, text="User Metrics")
 
     # ----------------------------Upload tab--------------------------------
+    def sort_files(new_files, all_files):
+        # Returns sorted list of all elements with no repeated elements
+        for filepath in new_files:
+            if filepath not in all_files:
+                all_files.append(filepath)
+        # Returns all files wanting to read as tuple of string paths
+        return sorted(all_files)
+
+    # Appends only new files selected to display window
+    def display_files(root_box, files):
+        # Deletes current box and displays new files in alphabetical order
+        root_box.delete('1.0', END)
+        for filename in sorted(files):
+            root_box.insert(INSERT, filename)
+        return
+
     # Function to choose files wanted to open
     def choose_files():  # Function for opening Files
+        all_files = []
         ftypes = [('.png (Portable Graphics Format)', '*.png'),
                   ('.jpeg (Joint Photographic Experts Group)', '*jpeg'),
                   ('.tiff (Tagged Image File Format)', '*.tiff'),
                   ('.zip (Compressed File Format)', '*.zip')]
-        files = filedialog.askopenfilenames(filetypes=ftypes)
-        file_display.insert(INSERT, files)
-        return files
+        new_files = filedialog.askopenfilenames(filetypes=ftypes)
+        all_files = sort_files(new_files, all_files)  # Sorts files.
+        print(all_files)
+        display_files(file_display, all_files)  # Displays image names in file_display box.
+        return
 
     # Function if select upload files button
+    def upload_files():
+        file_display.delete('1.0', END)
+        print("Upload Files")
 
     # Choose File Section
     file_display = scrolledtext.ScrolledText(upload_tab,  # Display files
@@ -179,17 +201,13 @@ def data_interface_window(username='NA'):
                  pady=5,
                  padx=100)
 
-    # Function to upload files selected
-    def upload_files():
-        print("Upload Files")
-
     # Upload Selection Section
     upload_btn = Button(upload_tab,
                         text="Upload Files",
                         bg="grey",  # Set to grey when disabled
                         fg="black",
-                        command=upload_files,
-                        state="disabled")
+                        command=upload_files)#,
+                        #state="disabled")
     upload_btn.grid(column=1,  # Choose file button location
                     row=6,
                     sticky=W,
