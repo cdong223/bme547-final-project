@@ -9,12 +9,24 @@ app = Flask(__name__)
 
 
 def database_connection():
-    connect("DATABASE_KEY")
+    connect("mongodb+srv://dervil_dong_moavenzadeh_qi:BME54701@cluster0-dykvj.mongodb.net/test?retryWrites=true&w=majority")
 
 
 # ----------------------------Login Screen--------------------------------
 # -----------------------------Upload tab---------------------------------
 # -----------------------------Display tab--------------------------------
+def get_all_images(id):
+    user = UserData.objects.raw({"_id": id}).first()
+    name = user.image_name
+    image = user.image
+    list = [name, image]
+    return list
+
+@app.route("/api/get_all_images", methods=["POST"])
+def image_list():
+    user_id = request.get_json()
+    output_list = get_all_images(user_id)
+    return jsonify(output_list), 200
 # ----------------------------Download tab--------------------------------
 # ----------------------------User Metrics tab----------------------------
 
