@@ -146,6 +146,11 @@ def data_interface_window(username='NA'):
         print(out_files)
         # Display all files selected
         display_files(file_display, out_files)  # Displays image names in file_display box.
+        # Allow selection of upload button as files are selected
+        if out_files:
+            upload_btn.config(state='normal',
+                              bg='white',
+                              fg='black')
         return out_files
 
     # Function if select upload files button
@@ -160,6 +165,9 @@ def data_interface_window(username='NA'):
         # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
         reset_selection(files)
+        upload_btn.config(state='disabled',
+                          bg='grey',
+                          fg='black')
         print(files)
         return
 
@@ -227,8 +235,8 @@ def data_interface_window(username='NA'):
                         text="Upload Files",
                         bg="grey",  # Set to grey when disabled
                         fg="black",
-                        command=lambda: upload_files(all_files, processing_type))#,
-                        #state="disabled")
+                        command=lambda: upload_files(all_files, processing_type),
+                        state="disabled")
     upload_btn.grid(column=1,  # Choose file button location
                     row=6,
                     sticky=W,
