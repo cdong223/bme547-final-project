@@ -116,13 +116,13 @@ def data_interface_window(username='NA'):
     tab_control.add(metrics_tab, text="User Metrics")
 
     # ----------------------------Upload tab--------------------------------
-    def sort_files(new_files, all_files):
+    def sort_files(new_files, out_files):
         # Returns sorted list of all elements with no repeated elements
         for filepath in new_files:
             if filepath not in all_files:
-                all_files.append(filepath)
+                out_files.append(filepath)
         # Returns all files wanting to read as tuple of string paths
-        return sorted(all_files)
+        return sorted(out_files)
 
     # Appends only new files selected to display window
     def display_files(root_box, files):
@@ -134,24 +134,43 @@ def data_interface_window(username='NA'):
         return
 
     # Function to choose files wanted to open
-    def choose_files(out_files):  # Function for opening Files
+    def choose_files(out_files):
+        # Open file selection box
         ftypes = [('.png (Portable Graphics Format)', '*.png'),
                   ('.jpeg (Joint Photographic Experts Group)', '*jpeg'),
                   ('.tiff (Tagged Image File Format)', '*.tiff'),
                   ('.zip (Compressed File Format)', '*.zip')]
         new_files = filedialog.askopenfilenames(filetypes=ftypes)
+        # Sort for non-repeated list of files
         out_files = sort_files(new_files, out_files)  # Sorts files.
         print(out_files)
+        # Display all files selected
         display_files(file_display, out_files)  # Displays image names in file_display box.
-        return
+        return out_files
 
     # Function if select upload files button
-    def upload_files():
+    def upload_files(files, processing):
+        print(files)
+        # Submit post request to validate files to upload (including processing) and presence in dictionary
+            # Display window listing files present and those not. Continue with those not already present.
+            # Store all filepaths not present
+
+        # For filepath not present - submit post request of files.
+
+        # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
-        print("Upload Files")
+        reset_selection(files)
+        print(files)
+        return
+
+    # Reset all files chosen upon upload
+    def reset_selection(files):
+        removable_files = tuple(files)
+        for filepath in removable_files:
+            files.remove(filepath)
 
     # Choose File Section
-    all_files = []  # Stores all filepaths of files wanting to upload. 
+    all_files = []  # Stores all filepaths of files wanting to upload.
     file_display = scrolledtext.ScrolledText(upload_tab,  # Display files
                                              width=50,
                                              height=1)
@@ -208,14 +227,13 @@ def data_interface_window(username='NA'):
                         text="Upload Files",
                         bg="grey",  # Set to grey when disabled
                         fg="black",
-                        command=upload_files)#,
+                        command=lambda: upload_files(all_files, processing_type))#,
                         #state="disabled")
     upload_btn.grid(column=1,  # Choose file button location
                     row=6,
                     sticky=W,
                     pady=5,
                     padx=100)
-
 
     # ----------------------------Display tab---------------------------------
     def left_display():  # find the picture according to the name
