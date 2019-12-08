@@ -5,7 +5,6 @@ from tkinter import scrolledtext
 from PIL import ImageTk, Image
 
 
-
 # ---------------------------Login Screen--------------------------------
 def login_window():
     # Initialize global variables
@@ -118,13 +117,15 @@ def data_interface_window(username='NA'):
     # ----------------------------Upload tab--------------------------------
     # Function to choose files wanted to open
     def choose_files():  # Function for opening Files
-        ftypes = [('Portable Graphics Format .png', '*.png'),
-                  ('Joint Photographic Experts Group .jpeg', '*jpeg'),
-                  ('Tagged Image File Format .tiff', '*.tiff'),
-                  ('Compressed File Format .zip', '*.zip')]
+        ftypes = [('.png (Portable Graphics Format)', '*.png'),
+                  ('.jpeg (Joint Photographic Experts Group)', '*jpeg'),
+                  ('.tiff (Tagged Image File Format)', '*.tiff'),
+                  ('.zip (Compressed File Format)', '*.zip')]
         files = filedialog.askopenfilenames(filetypes=ftypes)
         file_display.insert(INSERT, files)
         return files
+
+    # Function if select upload files button
 
     # Choose File Section
     file_display = scrolledtext.ScrolledText(upload_tab,  # Display files
@@ -185,9 +186,10 @@ def data_interface_window(username='NA'):
     # Upload Selection Section
     upload_btn = Button(upload_tab,
                         text="Upload Files",
-                        bg="white",
+                        bg="grey",  # Set to grey when disabled
                         fg="black",
-                        command=upload_files)
+                        command=upload_files,
+                        state="disabled")
     upload_btn.grid(column=1,  # Choose file button location
                     row=6,
                     sticky=W,
