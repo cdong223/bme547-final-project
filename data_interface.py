@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from tkinter import scrolledtext
 from PIL import ImageTk, Image
+import os
 
 
 # ---------------------------Login Screen--------------------------------
@@ -128,20 +129,20 @@ def data_interface_window(username='NA'):
         # Deletes current box and displays new files in alphabetical order
         root_box.delete('1.0', END)
         for filename in sorted(files):
-            root_box.insert(INSERT, filename)
+            head, tail = os.path.split(filename)
+            root_box.insert(END, tail+'\n')
         return
 
     # Function to choose files wanted to open
-    def choose_files():  # Function for opening Files
-        all_files = []
+    def choose_files(out_files):  # Function for opening Files
         ftypes = [('.png (Portable Graphics Format)', '*.png'),
                   ('.jpeg (Joint Photographic Experts Group)', '*jpeg'),
                   ('.tiff (Tagged Image File Format)', '*.tiff'),
                   ('.zip (Compressed File Format)', '*.zip')]
         new_files = filedialog.askopenfilenames(filetypes=ftypes)
-        all_files = sort_files(new_files, all_files)  # Sorts files.
-        print(all_files)
-        display_files(file_display, all_files)  # Displays image names in file_display box.
+        out_files = sort_files(new_files, out_files)  # Sorts files.
+        print(out_files)
+        display_files(file_display, out_files)  # Displays image names in file_display box.
         return
 
     # Function if select upload files button
@@ -150,6 +151,7 @@ def data_interface_window(username='NA'):
         print("Upload Files")
 
     # Choose File Section
+    all_files = []  # Stores all filepaths of files wanting to upload. 
     file_display = scrolledtext.ScrolledText(upload_tab,  # Display files
                                              width=50,
                                              height=1)
@@ -158,7 +160,7 @@ def data_interface_window(username='NA'):
                       text="Choose Files",
                       bg="white",
                       fg="black",
-                      command=choose_files)
+                      command=lambda: choose_files(all_files))
     file_btn.grid(column=2, row=1)  # Choose file button location
 
     # Choose Processing Type Section
