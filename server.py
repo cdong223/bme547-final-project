@@ -72,14 +72,11 @@ def get_db_img_name(img_name, processing):
     return img_name + processing + "." + filetype
 
 
-def img_names_from_filepath(filepaths):
-    all_images = {}
-    for filepath in filepaths:
-        head, tail = isolate_image_name_from_path(filepath)
-        all_images[filepath] = []
-        all_images[filepath].append(get_db_img_name(tail, '_original'))  # Append original image name
-        all_images[filepath].append(get_db_img_name(tail, data["processing"]))  # Append image name with processing type
-    return all_images
+def img_name_from_filepath(filepath, processing):
+    # COULD BE MORE MODULAR IF ACCEPT SINGLE FILE PATH AND PROCESSING TYPE AND RETURNS NAME
+    head, tail = isolate_image_name_from_path(filepath)
+    img_name = get_db_img_name(tail, processing)  # Append original image name
+    return img_name
 
 
 def split_db_img_name(img_name):
@@ -103,10 +100,13 @@ def validate_images():
 
     # Unload ZIP files and add to filepaths?
 
-    # Loop through each filepath and store image name with appended processing as found in DB
-    all_images_dict = img_names_from_filepath(data["filepaths"])
+    # Store all filepaths with corresponding image name versions from processing type
+    all_images_dict = {}
+    for filepath in data["filepaths"]:
+        all_images_dict[filepath].append(img_name_from_filepath(filepath, data["processing"]))
+        all_images_dict[filepath].append(img_name_from_filepath(filepath, '_original'))
 
-    # Loop through filepaths
+    # Retrieve images present and not present with processing type
     # MAKE A FUNCTION WHICH RETURNS DICTS
     for filepath in all_images_dict:
         # Loop through image names from db corresponding to each filepath
