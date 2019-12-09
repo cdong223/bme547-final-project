@@ -12,7 +12,8 @@ def login_window():
     # Initialize global variables
     global login_screen
     global username
-    global url = "http://127.0.0.1:5000"
+    global url
+    url = "http://127.0.0.1:5000"
 
     # Login command
     def validateLogin():
