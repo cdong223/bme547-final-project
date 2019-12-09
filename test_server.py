@@ -56,8 +56,18 @@ def test_validate_input_json(in_dict, ex_dict, expected):
     assert expected == message
 
 
+@pytest.mark.parametrize("filepath, expected", [
+    ('C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+     'Aviary Stock Photo 1.png'),
+    ('moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+     'Aviary Stock Photo 1.png'),
+    ('Aviary Stock Photo 1.png',
+     'Aviary Stock Photo 1.png')
+])
 def test_isolate_image_name_from_path(filepath, expected):
     from server import isolate_image_name_from_path
+    head, img_name = isolate_image_name_from_path(filepath)
+    assert expected == img_name
 
 
 def test_get_db_img_name(img_name, processing, expected):
