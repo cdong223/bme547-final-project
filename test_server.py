@@ -92,9 +92,33 @@ def test_img_name_from_filepath(filepath, processing, expected):
     assert expected == img_name
 
 
-def test_is_image_present(username, img_name, expected):
+@pytest.mark.parametrize("stored_username, stored_img_name, username, img_name, expected", [
+    ('...',
+     'Aviary_original.png',
+     '...',
+     'Aviary_original.png',
+     True),
+    ('...',
+     'Aviary_original.png',
+     'unstored_username',
+     'Aviary_original.png',
+     False),
+    ('...',
+     'Aviary_original.png',
+     '...',
+     'Aviary_unstored.png',
+     False),
+])
+def test_is_image_present(stored_username, stored_img_name, username, img_name, expected):
     from server import is_image_present
+    user = UserData(username=stored_username,
+                    image_name=stored_img_name)
+    user.save()
+    value = is_image_present(username, img_name)
+    assert expected == value
+    UserData.objects.raw({"_id": stored_username}).delete()
 
 
 if __name__ == "__main__":
+    test_database_connection()
     print("test_server.py Main")
