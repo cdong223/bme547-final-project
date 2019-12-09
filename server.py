@@ -118,8 +118,8 @@ def validate_images():
     # Store all filepaths with corresponding image name versions from processing type
     all_images_dict = {}
     for filepath in data["filepaths"]:
-        all_images_dict[filepath][img_name_from_filepath(filepath, data["processing"])] = data["processing"]
         all_images_dict[filepath][img_name_from_filepath(filepath, '_original')] = '_original'
+        all_images_dict[filepath][img_name_from_filepath(filepath, data["processing"])] = data["processing"]
 
     # Retrieve images present and not present with processing type
     old_images = {}
@@ -198,6 +198,9 @@ def upload_images():
     if not valid:
         logging.warning("Attempted upload json is wrong format")
         return jsonify(message), code
+
+    # Check if user already has UserData collection.
+    # If not, need to create one with first file entry being the first of new_images knowing it will _original.
 
     # Begin uploading images. Handle ZIPs separately?
     new_images = data["images"]
