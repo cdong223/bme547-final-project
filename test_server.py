@@ -1,6 +1,7 @@
 import pytest
 import pymongo
 from UserData import UserData
+from LogIn import LogIn
 
 
 def test_database_connection():
@@ -39,6 +40,7 @@ def test_database_connection():
       "filepaths": ["filepath1", "filepath2"],
       "processing": "_histogramEqualized"},
      {"missing_dict_key": (str,),
+      "username": (str,),
       "filepaths": (list,),
       "processing": (str,)},
      "Dictionary does not have enough information. Missing keys."),
@@ -111,12 +113,15 @@ def test_img_name_from_filepath(filepath, processing, expected):
 ])
 def test_is_image_present(stored_username, stored_img_name, username, img_name, expected):
     from server import is_image_present
-    user = UserData(username=stored_username,
-                    image_name=stored_img_name)
+    user = LogIn(username=stored_username)
     user.save()
+    user_data = UserData(username=user,
+                         image_name=[stored_img_name])
+    user_data.save()
     value = is_image_present(username, img_name)
     assert expected == value
     UserData.objects.raw({"_id": stored_username}).delete()
+    LogIn.objects.raw({"_id": stored_username}).delete()
 
 
 if __name__ == "__main__":

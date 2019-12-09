@@ -81,9 +81,12 @@ def img_name_from_filepath(filepath, processing):
 
 def is_image_present(username, img_name):
     # Check if image is present
-    count = UserData.objects.raw(
-        {"_id": username,
-         "image_name": img_name}).count()
+    users = UserData.objects.raw({"_id": username})
+    count = 0
+    for user in users:
+        for stored_images in user.image_name:
+            if img_name == stored_images:
+                count += 1
     if count == 1:
         return True
     elif count == 0:
