@@ -4,6 +4,7 @@ from tkinter import filedialog
 from tkinter import scrolledtext
 from PIL import ImageTk, Image
 import os
+import requests
 
 
 # ---------------------------Login Screen--------------------------------
@@ -11,6 +12,7 @@ def login_window():
     # Initialize global variables
     global login_screen
     global username
+    global url = "http://127.0.0.1:5000"
 
     # Login command
     def validateLogin():
@@ -153,11 +155,32 @@ def data_interface_window(username='NA'):
                               fg='black')
         return out_files
 
+    # Reset all files chosen upon upload
+    def reset_selection(files):
+        removable_files = tuple(files)
+        for filepath in removable_files:
+            files.remove(filepath)
+
     # Function if select upload files button
     def upload_files(files, processing):
         print(files)
         # Submit post request to validate files to upload (including processing) and presence in dictionary
-            # Display window listing files present and those not. Continue with those not already present.
+        new_url = url + "/api/validate_images"
+        validate_dict = {"username": username,
+                         "filepaths": files,
+                         "processing": processing}
+        r = requests.post(new_url, json=validate_dict)
+        out_dict = r.json()
+        if r.status_code != 200:
+            print("Improper Request")
+            print(r.json())
+
+        # Parse through dictionary in r.
+        present_images =
+        new_images = 
+
+        # Display window listing files present and those not. Continue with those not already present.
+
             # Store all filepaths not present
 
         # For filepath not present - submit post request of files.
@@ -170,12 +193,6 @@ def data_interface_window(username='NA'):
                           fg='black')
         print(files)
         return
-
-    # Reset all files chosen upon upload
-    def reset_selection(files):
-        removable_files = tuple(files)
-        for filepath in removable_files:
-            files.remove(filepath)
 
     # Choose File Section
     all_files = []  # Stores all filepaths of files wanting to upload.
