@@ -192,11 +192,11 @@ def data_interface_window(username='NA'):
 
     # Choose Processing Type Section
     processing_type = StringVar()  # Variable for processing type
-    processing_type.set('hist')
+    processing_type.set('_histogramEqualized')
     hist_process = Radiobutton(upload_tab,
                                text='Histogram Equalization',
                                variable=processing_type,
-                               value='hist')
+                               value='_histogramEqualized')
     hist_process.grid(column=1,
                       row=2,
                       sticky=W,
@@ -205,7 +205,7 @@ def data_interface_window(username='NA'):
     cont_stretch = Radiobutton(upload_tab,
                                text='Contrast Stretching',
                                variable=processing_type,
-                               value='cont')
+                               value='_contrastStretched')
     cont_stretch.grid(column=1,
                       row=3,
                       sticky=W,
@@ -214,7 +214,7 @@ def data_interface_window(username='NA'):
     log_comp = Radiobutton(upload_tab,
                            text='Log Compression',
                            variable=processing_type,
-                           value='log')
+                           value='_logCompressed')
     log_comp.grid(column=1,
                   row=4,
                   sticky=W,
@@ -223,7 +223,7 @@ def data_interface_window(username='NA'):
     inv_img = Radiobutton(upload_tab,
                           text='Invert Image',
                           variable=processing_type,
-                          value='inv')
+                          value='_invertedImage')
     inv_img.grid(column=1,
                  row=5,
                  sticky=W,
