@@ -24,7 +24,7 @@ def find_metrics(id, name):
     sizes = user.image_size
     upload_times = user.upload_dat
     histograms = user.hist_data
-    for index, item in names:
+    for index, item in enumerate(names):
         if item == name:
             CPU_time = CPU_times[index]
             size = sizes[index]
@@ -37,7 +37,7 @@ def find_metrics(id, name):
 def find_file(image_list, name):
     names = image_list[0]
     files = image_list[1]
-    for index, item in names:
+    for index, item in enumerate(names):
         if item == name:
             file = files[index]
     return file

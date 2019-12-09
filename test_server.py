@@ -20,7 +20,7 @@ def test_get_all_images(input, expected1, expected2):
     p.save()
     p = UserData(username='1', image_name=["a.png", "b.png"],
                  image=["imageA", "imageB"], processing_time=["0.5s", "0.2s"],
-                 image_size=["400x200, 300x300"],
+                 image_size=["400x200", "300x300"],
                  hist_data=["histA", "histB"],
                  upload_dat=["2019/12/8", "2019/12/9"])
     p.save()
@@ -28,13 +28,74 @@ def test_get_all_images(input, expected1, expected2):
     p.save()
     p = UserData(username='2', image_name=["a.jpg", "a_hist.jpg"],
                  image=["imageA", "histA"], processing_time=["0.3s", "0.4s"],
-                 image_size=["400x100, 200x200"],
+                 image_size=["400x100", "200x200"],
                  hist_data=["histA", "histhistA"],
                  upload_dat=["2019/12/1", "2019/12/2"])
     p.save()
     result = get_all_images(input)
     assert result[0] == expected1
     assert result[1] == expected2
+    UserData.objects.raw({"_id": "1"}).delete()
+    UserData.objects.raw({"_id": "2"}).delete()
+    LogIn.objects.raw({"_id": "1"}).delete()
+    LogIn.objects.raw({"_id": "2"}).delete()
+
+
+@pytest.mark.parametrize("input, input2, expected",
+                         [('1', "a.png", "imageA"),
+                          ('2', "a_hist.jpg", "histA")])
+def test_find_file(input, input2, expected):
+    from server import find_file, get_all_images
+    p = LogIn(username='1')
+    p.save()
+    p = UserData(username='1', image_name=["a.png", "b.png"],
+                 image=["imageA", "imageB"], processing_time=["0.5s", "0.2s"],
+                 image_size=["400x200", "300x300"],
+                 hist_data=["histA", "histB"],
+                 upload_dat=["2019/12/8", "2019/12/9"])
+    p.save()
+    p = LogIn(username='2')
+    p.save()
+    p = UserData(username='2', image_name=["a.jpg", "a_hist.jpg"],
+                 image=["imageA", "histA"], processing_time=["0.3s", "0.4s"],
+                 image_size=["400x100", "200x200"],
+                 hist_data=["histA", "histhistA"],
+                 upload_dat=["2019/12/1", "2019/12/2"])
+    p.save()
+    image_list = get_all_images(input)
+    result = find_file(image_list, input2)
+    assert result == expected
+    UserData.objects.raw({"_id": "1"}).delete()
+    UserData.objects.raw({"_id": "2"}).delete()
+    LogIn.objects.raw({"_id": "1"}).delete()
+    LogIn.objects.raw({"_id": "2"}).delete()
+
+
+@pytest.mark.parametrize("input, input2, expected",
+                         [('1', "a.png",
+                          ["0.5s", "400x200", "2019/12/8", "histA"]),
+                          ('2', "a_hist.jpg",
+                          ["0.4s", "200x200", "2019/12/2", "histhistA"])])
+def test_find_metrics(input, input2, expected):
+    from server import find_metrics
+    p = LogIn(username='1')
+    p.save()
+    p = UserData(username='1', image_name=["a.png", "b.png"],
+                 image=["imageA", "imageB"], processing_time=["0.5s", "0.2s"],
+                 image_size=["400x200", "300x300"],
+                 hist_data=["histA", "histB"],
+                 upload_dat=["2019/12/8", "2019/12/9"])
+    p.save()
+    p = LogIn(username='2')
+    p.save()
+    p = UserData(username='2', image_name=["a.jpg", "a_hist.jpg"],
+                 image=["imageA", "histA"], processing_time=["0.3s", "0.4s"],
+                 image_size=["400x100", "200x200"],
+                 hist_data=["histA", "histhistA"],
+                 upload_dat=["2019/12/1", "2019/12/2"])
+    p.save()
+    result = find_metrics(input, input2)
+    assert result == expected
     UserData.objects.raw({"_id": "1"}).delete()
     UserData.objects.raw({"_id": "2"}).delete()
     LogIn.objects.raw({"_id": "1"}).delete()
