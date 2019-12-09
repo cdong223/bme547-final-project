@@ -72,6 +72,16 @@ def get_db_img_name(img_name, processing):
     return img_name + processing + "." + filetype
 
 
+def img_names_from_filepath(filepaths):
+    all_images = {}
+    for filepath in filepaths:
+        head, tail = isolate_image_name_from_path(filepath)
+        all_images[filepath] = []
+        all_images[filepath].append(get_db_img_name(tail, '_original'))  # Append original image name
+        all_images[filepath].append(get_db_img_name(tail, data["processing"]))  # Append image name with processing type
+    return all_images
+
+
 def split_db_img_name(img_name):
 
     return img_name, processing
@@ -91,20 +101,14 @@ def validate_images():
         logging.warning("Attempted upload json is wrong format")
         return jsonify(message), code
 
-    # Unload ZIP files
-    all_images = {}
+    # Unload ZIP files and add to filepaths?
 
     # Loop through each filepath and store image name with appended processing as found in DB
-    # MAKE A FUNCTION ACCEPTING ALL FILEPATHS RETURNING ALL_IMAGES DICT
-    for filepath in data["filepaths"]:
-        head, tail = isolate_image_name_from_path(filepath)
-        all_images[filepath] = []
-        all_images[filepath].append(get_db_img_name(tail, '_original'))  # Append original image name
-        all_images[filepath].append(get_db_img_name(tail, data["processing"]))  # Append image name with processing type
+    all_images_dict = img_names_from_filepath(data["filepaths"])
 
     # Loop through filepaths
     # MAKE A FUNCTION WHICH RETURNS DICTS
-    for filepath in all_images:
+    for filepath in all_images_dict:
         # Loop through image names from db corresponding to each filepath
         for img_name in filepath:
             # Check if image_name present
