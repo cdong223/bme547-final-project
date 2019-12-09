@@ -105,28 +105,33 @@ def validate_images():
 
     # Unload ZIP files
     all_images = {}
-    new_images = {}  # Assume all new. Return in json to indicate which images and processing to upload
-    old_images = {}  # Return in json to indicate which images with processing already present
 
     # Loop through each filepath and store image name with appended processing as found in DB
+    # MAKE A FUNCTION ACCEPTING ALL FILEPATHS RETURNING ALL_IMAGES DICT
     for filepath in data["filepaths"]:
         head, tail = isolate_image_name_from_path(filepath)
         all_images[filepath] = []
         all_images[filepath].append(get_db_img_name(tail, 'orig'))  # Append original image name
         all_images[filepath].append(get_db_img_name(tail, data["processing"]))  # Append image name with processing type
 
-    # Loop through image names to see if present in DB
-    for img_name in img_names:
-        count = UserData.objects.raw(
-            {"_id": data["username"],
-             "image_name": img_name}).count()
-        if count == 1:
-            old_images[]
-        elif count == 0:
-            new_images[]
-        else:
-            logging.warning("Error in finding files")
-            return "Error in finding files", 400
+    # Loop through filepaths
+    # MAKE A FUNCTION WHICH RETURNS DICTS
+    for filepath in all_images:
+        # Loop through image names from db corresponding to each filepath
+        for img_name in filepath:
+            # Check if image_name present
+            count = UserData.objects.raw(
+                {"_id": data["username"],
+                "image_name": img_name}).count()
+            if count == 1:
+                # If present, store filepath and processing type as old_image
+                old_images[]
+            elif count == 0:
+                # If not present, store filepath and processing type as new_image
+                new_images[]
+            else:
+                logging.warning("Error in finding files")
+                return "Error in finding files", 400
 
 
     # Return dictionary of images present and not present
