@@ -135,7 +135,7 @@ def validate_images():
     # Return dictionary of images present and not present
     out_dict = {"present": old_images,
                 "not present": new_images}
-    return out_dict
+    return jsonify(out_dict)
 
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
