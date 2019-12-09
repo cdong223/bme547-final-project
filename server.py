@@ -152,8 +152,22 @@ def upload_images():
         return jsonify(message), code
 
     # Begin uploading images. Handle ZIPs separately?
-    
+    new_images = data["images"]
+    for filepath in new_images:
+        if new_images[filepath] == '_original':
+            original_upload(filepath)
+        elif new_images[filepath] == '_histogramEqualized':
+            histogramEqualized_upload(filepath)
+        elif new_images[filepath] == '_contrastStretched':
+            contrastStretched_upload(filepath)
+        elif new_images[filepath] == '_logCompressed':
+            logCompressed_upload(filepath)
+        elif new_images[filepath] == '_invertedImage':
+            invertedImage_upload(filepath)
+        else:
+            return "Invalid Computation Type", 400
 
+    return "Uploaded all images successfully"
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
 # ----------------------------User Metrics tab----------------------------
