@@ -142,11 +142,18 @@ def validate_images():
     return jsonify(out_dict)
 
 
+def get_num_pixels(filepath):
+    width, height = Image.open(filepath).size
+    image_size = str(width)+"x"+str(height)
+    return image_size
+
+
 def original_upload(username, filepath):
     # Upload original image in filepath
     # MAY NEED TO MAKE THIS MORE MODULAR TO EXPAND TO OTHER FUNCTIONS
     # Set all additional values to store with image:
     image_name = img_name_from_filepath(filepath, "_original")
+    width, height = get_num_pixels(filepath)
     print(image_name)
     image_size = 400  # EDIT THIS TO HAVE FUNCTION TO RETURN IMAGE SIZE
     hist_data = 0  # EDIT THIS WITH FUNCTION
@@ -156,6 +163,7 @@ def original_upload(username, filepath):
         start_time = time.time()  # Better way may be to use timeit.timeit(function)
         coded = base64.b64encode(image_file.read())
         end_time = time.time()
+
         processing_time = end_time - start_time
         print(coded)
         UserData.objects.raw(
