@@ -124,6 +124,30 @@ def test_is_image_present(stored_username, stored_img_name, username, img_name, 
     LogIn.objects.raw({"_id": stored_username}).delete()
 
 
+@pytest.mark.parametrize("username, filepath, expected", [
+    ('sm642',
+     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+     'Aviary Stock Photo 1_original.png')
+])
+def test_original_upload(username, filepath, expected):
+    from server import original_upload
+    user = LogIn(username=username)
+    user.save()
+    user_data = UserData(username=user,
+                         image_name=['.'])
+    user_data.save()
+    original_upload(username, filepath)
+    users = UserData.objects.raw({"_id": username})
+    for user in users:
+        stored_name = user.image_name
+    assert expected == stored_name[1]
+    UserData.objects.raw({"_id": username}).delete()
+    LogIn.objects.raw({"_id": username}).delete()
+
+
 if __name__ == "__main__":
     test_database_connection()
+    test_original_upload('sm642',
+     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+     'Aviary Stock Photo 1_original.png')
     print("test_server.py Main")

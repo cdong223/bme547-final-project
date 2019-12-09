@@ -145,16 +145,19 @@ def original_upload(username, filepath):
     # Upload original image in filepath
     # MAY NEED TO MAKE THIS MORE MODULAR TO EXPAND TO OTHER FUNCTIONS
     # Set all additional values to store with image:
-    img_name = img_name_from_filepath(filepath, "_original")
+    image_name = img_name_from_filepath(filepath, "_original")
+    print(image_name)
     processing_time = 0  # EDIT THIS FOR OTHER FUNCTIONS
     image_size = 400  # EDIT THIS TO HAVE FUNCTION TO RETURN IMAGE SIZE
     hist_data = 0  # EDIT THIS WITH FUNCTION
     upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
+    print(upload_date)
     with open(filepath, "rb") as image_file:
         coded = base64.b64encode(image_file.read())
+        print(coded)
         UserData.objects.raw(
             {"_id": username}).update(
-            {"$push": {"image_name": img_name,
+            {"$push": {"image_name": image_name,
                        "image": coded,
                        "processing_time": processing_time,
                        "image_size": image_size,
