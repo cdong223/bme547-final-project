@@ -67,7 +67,7 @@ def isolate_image_name_from_path(filepath):
     return head, tail
 
 
-def get_img_name(img_name, processing):
+def get_db_img_name(img_name, processing):
     img_name, filetype = img_name.split('.')
     if processing == 'orig':
         img_name = img_name + '_original.' + filetype
@@ -82,6 +82,11 @@ def get_img_name(img_name, processing):
     else:
         return "BAD PROCESSING TYPE"
     return img_name
+
+
+def split_db_img_name(img_name):
+
+    return img_name, processing
 
 
 @app.route("/api/validate_images", methods=["POST"])
@@ -99,17 +104,30 @@ def validate_images():
         return jsonify(message), code
 
     # Unload ZIP files
-    img_names = []
+    all_images = {}
+    new_images = {}  # Assume all new. Return in json to indicate which images and processing to upload
+    old_images = {}  # Return in json to indicate which images with processing already present
 
-    # Loop through each filepath and store image name with appended processing
+    # Loop through each filepath and store image name with appended processing as found in DB
     for filepath in data["filepaths"]:
         head, tail = isolate_image_name_from_path(filepath)
-        img_names.append(get_img_name(tail, 'orig'))  # Append original image name
-        img_names.append(get_img_name(tail, data["processing"]))  # Append image name with processing type
+        all_images[filepath] = []
+        all_images[filepath].append(get_db_img_name(tail, 'orig'))  # Append original image name
+        all_images[filepath].append(get_db_img_name(tail, data["processing"]))  # Append image name with processing type
 
     # Loop through image names to see if present in DB
     for img_name in img_names:
-        print(img_name)
+        count = UserData.objects.raw(
+            {"_id": data["username"],
+             "image_name": img_name}).count()
+        if count == 1:
+            old_images[]
+        elif count == 0:
+            new_images[]
+        else:
+            logging.warning("Error in finding files")
+            return "Error in finding files", 400
+
 
     # Return dictionary of images present and not present
 
