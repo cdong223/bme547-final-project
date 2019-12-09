@@ -141,28 +141,44 @@ def validate_images():
     return jsonify(out_dict)
 
 
-def original_upload(filepath):
+def original_upload(username, filepath):
     # Upload original image in filepath
-
+    # MAY NEED TO MAKE THIS MORE MODULAR TO EXPAND TO OTHER FUNCTIONS
+    # Set all additional values to store with image:
+    img_name = img_name_from_filepath(filepath, "_original")
+    processing_time = 0  # EDIT THIS FOR OTHER FUNCTIONS
+    image_size = 400  # EDIT THIS TO HAVE FUNCTION TO RETURN IMAGE SIZE
+    hist_data = 0  # EDIT THIS WITH FUNCTION
+    upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
+    with open(filepath, "rb") as image_file:
+        coded = base64.b64encode(image_file.read())
+        UserData.objects.raw(
+            {"_id": username}).update(
+            {"$push": {"image_name": img_name,
+                       "image": coded,
+                       "processing_time": processing_time,
+                       "image_size": image_size,
+                       "hist_data": hist_data,
+                       "upload_date": upload_date}})
     return
 
 
-def histogram_equalized_upload(filepath):
+def histogram_equalized_upload(username, filepath):
     # Upload histogram equalized image from filepath
     return
 
 
-def contrast_stretched_upload(filepath):
+def contrast_stretched_upload(username, filepath):
     # Upload contrast stretched image from filepath
     return
 
 
-def log_compressed_upload(filepath):
+def log_compressed_upload(username, filepath):
     # Upload log compressed image from filepath
     return
 
 
-def inverted_image_upload(filepath):
+def inverted_image_upload(username, filepath):
     # Upload inverted image from filepath
     return
 
@@ -184,15 +200,15 @@ def upload_images():
     new_images = data["images"]
     for filepath in new_images:
         if new_images[filepath] == '_original':
-            original_upload(filepath)
+            original_upload(username, filepath)
         elif new_images[filepath] == '_histogramEqualized':
-            histogram_equalized_upload(filepath)
+            histogram_equalized_upload(username, filepath)
         elif new_images[filepath] == '_contrastStretched':
-            contrast_stretched_upload(filepath)
+            contrast_stretched_upload(username, filepath)
         elif new_images[filepath] == '_logCompressed':
-            log_compressed_upload(filepath)
+            log_compressed_upload(username, filepath)
         elif new_images[filepath] == '_invertedImage':
-            inverted_image_upload(filepath)
+            inverted_image_upload(username, filepath)
         else:
             return "Invalid Computation Type", 400
 
