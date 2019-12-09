@@ -69,19 +69,7 @@ def isolate_image_name_from_path(filepath):
 
 def get_db_img_name(img_name, processing):
     img_name, filetype = img_name.split('.')
-    if processing == 'orig':
-        img_name = img_name + '_original.' + filetype
-    elif processing == 'hist':
-        img_name = img_name + '_histogramEqualized.' + filetype
-    elif processing == 'cont':
-        img_name = img_name + '_contrastStretched.' + filetype
-    elif processing == 'inv':
-        img_name = img_name + '_invertedImage.' + filetype
-    elif processing == 'log':
-        img_name = img_name + '_logCompressed.' + filetype
-    else:
-        return "BAD PROCESSING TYPE"
-    return img_name
+    return img_name + processing + "." + filetype
 
 
 def split_db_img_name(img_name):
@@ -111,7 +99,7 @@ def validate_images():
     for filepath in data["filepaths"]:
         head, tail = isolate_image_name_from_path(filepath)
         all_images[filepath] = []
-        all_images[filepath].append(get_db_img_name(tail, 'orig'))  # Append original image name
+        all_images[filepath].append(get_db_img_name(tail, '_original'))  # Append original image name
         all_images[filepath].append(get_db_img_name(tail, data["processing"]))  # Append image name with processing type
 
     # Loop through filepaths
