@@ -71,8 +71,8 @@ def validate_input_json(data, expected):
     return valid, message, code
 
 
-@app.route("/api/upload_images", methods=["POST"])
-def upload_images():
+@app.route("/api/validate_images", methods=["POST"])
+def validate_images():
     # Retrieve data sent to server
     data = request.get_json()  # Returns native dictionary
 
@@ -80,8 +80,11 @@ def upload_images():
     expected = {"username": (str,),
                 "filepaths": (list,)}
     valid, message, code = validate_input_json(data, expected)
+    if not valid:
+        logging.warning("Attempted upload json is wrong format")
+        return jsonify(message), code
 
-    
+    # Check if files present
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
 # ----------------------------User Metrics tab----------------------------
