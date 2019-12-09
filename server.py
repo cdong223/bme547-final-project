@@ -5,6 +5,11 @@ from PIL import Image
 from LogIn import LogIn
 from UserData import UserData
 from UserMetrics import UserMetrics
+from skimage import exposure, io, color
+import skimage
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 import logging
 import os
 import base64
@@ -148,24 +153,37 @@ def get_num_pixels(filepath):
     return image_size
 
 
+def pixel_histogram(filepath):
+    image = skimage.io.imread(filepath)
+    red_hist = skimage.exposure.histogram(image[:, :, 0])
+    green_hist = skimage.exposure.histogram(image[:, :, 1])
+    blue_hist = skimage.exposure.histogram(image[:, :, 2])
+    hist_dict = {"red": red_hist,
+                 "green": green_hist,
+                 "blue": blue_hist}
+    return hist_dict
+
+
 def original_upload(username, filepath):
     # Upload original image in filepath
-    # MAY NEED TO MAKE THIS MORE MODULAR TO EXPAND TO OTHER FUNCTIONS
-    # Set all additional values to store with image:
+    # Create image name
     image_name = img_name_from_filepath(filepath, "_original")
-    width, height = get_num_pixels(filepath)
-    print(image_name)
-    image_size = 400  # EDIT THIS TO HAVE FUNCTION TO RETURN IMAGE SIZE
-    hist_data = 0  # EDIT THIS WITH FUNCTION
+
+    # Calc image size
+    image_size = get_num_pixels(filepath)
+
+    # Store upload date
     upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
-    print(upload_date)
+
+    # Calc histogram data
+    hist_data = pixel_histogram(filepath)
     with open(filepath, "rb") as image_file:
         start_time = time.time()  # Better way may be to use timeit.timeit(function)
         coded = base64.b64encode(image_file.read())
         end_time = time.time()
 
-        processing_time = end_time - start_time
-        print(coded)
+        # Calc CPU processing time
+        processing_time = str(end_time - start_time)
         UserData.objects.raw(
             {"_id": username}).update(
             {"$push": {"image_name": image_name,
