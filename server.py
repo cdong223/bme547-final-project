@@ -1,11 +1,14 @@
 from flask import Flask, jsonify, request
 from datetime import datetime
 from pymodm import connect, MongoModel, fields
+from PIL import Image
 from LogIn import LogIn
 from UserData import UserData
 from UserMetrics import UserMetrics
 import logging
 import os
+import base64
+import io
 
 app = Flask(__name__)
 
@@ -138,6 +141,32 @@ def validate_images():
     return jsonify(out_dict)
 
 
+def original_upload(filepath):
+    # Upload original image in filepath
+
+    return
+
+
+def histogram_equalized_upload(filepath):
+    # Upload histogram equalized image from filepath
+    return
+
+
+def contrast_stretched_upload(filepath):
+    # Upload contrast stretched image from filepath
+    return
+
+
+def log_compressed_upload(filepath):
+    # Upload log compressed image from filepath
+    return
+
+
+def inverted_image_upload(filepath):
+    # Upload inverted image from filepath
+    return
+
+
 @app.route("/api/upload_images", methods=["POST"])
 def upload_images():
     # Retrieve data sent to server
@@ -157,13 +186,13 @@ def upload_images():
         if new_images[filepath] == '_original':
             original_upload(filepath)
         elif new_images[filepath] == '_histogramEqualized':
-            histogramEqualized_upload(filepath)
+            histogram_equalized_upload(filepath)
         elif new_images[filepath] == '_contrastStretched':
-            contrastStretched_upload(filepath)
+            contrast_stretched_upload(filepath)
         elif new_images[filepath] == '_logCompressed':
-            logCompressed_upload(filepath)
+            log_compressed_upload(filepath)
         elif new_images[filepath] == '_invertedImage':
-            invertedImage_upload(filepath)
+            inverted_image_upload(filepath)
         else:
             return "Invalid Computation Type", 400
 
