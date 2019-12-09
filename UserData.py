@@ -9,7 +9,7 @@ class UserData(MongoModel):
     processing_time = fields.ListField()
     image_size = fields.ListField()
     hist_data = fields.ListField()
-    upload_dat = fields.ListField()
+    upload_date = fields.ListField()
 
 
 if __name__ == "__main__":
