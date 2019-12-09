@@ -93,11 +93,6 @@ def is_image_present(username, img_name):
         return "Error in finding files"
 
 
-def split_db_img_name(img_name):
-
-    return img_name, processing
-
-
 @app.route("/api/validate_images", methods=["POST"])
 def validate_images():
     # Retrieve data sent to server
@@ -125,14 +120,19 @@ def validate_images():
     new_images = {}
     for filepath in all_images_dict:
         # Loop through image names from db corresponding to each filepath
-        for img_name in filepath:
-            # Check if image_name present MAKE FUNCTION
+        for img_name in all_images_dict[filepath]:
+            # Check if image is present with processing type
             if is_image_present(data["username"], img_name):
-                old_images[filepath] = processing_type
+                # If is present, store in return dict not to process
+                old_images[filepath].append(all_images_dict[filepath][img_name])
             else:
-                new_images[filepath] = processing_type
+                # If is not present, store in return dict to process
+                new_images[filepath].append(all_images_dict[filepath][img_name])
 
     # Return dictionary of images present and not present
+    out_dict = {"present": old_images,
+                "not present": new_images}
+    return out_dict
 
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
