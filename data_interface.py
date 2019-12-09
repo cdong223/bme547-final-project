@@ -175,15 +175,16 @@ def data_interface_window(username='NA'):
             print("Improper Request")
             print(r.json())
 
-        # Parse through dictionary in r.
-        present_images =
-        new_images = 
+        # Parse through dictionary to isolate files to upload.
+        present_images = out_dict["present"]
+        new_images = out_dict["not present"]
 
-        # Display window listing files present and those not. Continue with those not already present.
-
-            # Store all filepaths not present
+        # Call function to display top level tab of files present and those uploading.
+        # If Continue button, move forward and delete display/reset file selection/disable upload. If not, simply return. 
 
         # For filepath not present - submit post request of files.
+        store_dict = {"username": username,
+                      "images": new_images}
 
         # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
