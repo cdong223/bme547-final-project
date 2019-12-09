@@ -79,6 +79,20 @@ def img_name_from_filepath(filepath, processing):
     return img_name
 
 
+def is_image_present(username, img_name):
+    # Check if image is present
+    count = UserData.objects.raw(
+        {"_id": username,
+         "image_name": img_name}).count()
+    if count == 1:
+        return True
+    elif count == 0:
+        return False
+    else:
+        logging.warning("Error in finding files")
+        return "Error in finding files"
+
+
 def split_db_img_name(img_name):
 
     return img_name, processing
@@ -107,24 +121,14 @@ def validate_images():
         all_images_dict[filepath].append(img_name_from_filepath(filepath, '_original'))
 
     # Retrieve images present and not present with processing type
-    # MAKE A FUNCTION WHICH RETURNS DICTS
     for filepath in all_images_dict:
         # Loop through image names from db corresponding to each filepath
         for img_name in filepath:
-            # Check if image_name present
-            count = UserData.objects.raw(
-                {"_id": data["username"],
-                "image_name": img_name}).count()
-            if count == 1:
-                # If present, store filepath and processing type as old_image
+            # Check if image_name present MAKE FUNCTION
+            if is_image_present(data["username"], img_name):
                 old_images[]
-            elif count == 0:
-                # If not present, store filepath and processing type as new_image
-                new_images[]
             else:
-                logging.warning("Error in finding files")
-                return "Error in finding files", 400
-
+                new_images[]
 
     # Return dictionary of images present and not present
 
