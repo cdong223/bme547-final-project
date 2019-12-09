@@ -70,8 +70,15 @@ def test_isolate_image_name_from_path(filepath, expected):
     assert expected == img_name
 
 
+@pytest.mark.parametrize("img_name, processing, expected", [
+    ('Aviary Stock Photo 1.png',
+     '_original',
+     'Aviary Stock Photo 1_original.png')
+])
 def test_get_db_img_name(img_name, processing, expected):
     from server import get_db_img_name
+    img_name = get_db_img_name(img_name, processing)
+    assert expected == img_name
 
 
 def test_img_name_from_filepath(filepath, processing, expected):
