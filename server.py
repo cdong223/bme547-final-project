@@ -15,6 +15,15 @@ def database_connection():
 # ----------------------------Login Screen--------------------------------
 # -----------------------------Upload tab---------------------------------
 # -----------------------------Display tab--------------------------------
+def find_file(image_list, name):
+    names = image_list[0]
+    files = image_list[1]
+    for index, item in names:
+        if item == name:
+            file = files[index]
+    return file
+
+
 def get_all_images(id):
     user = UserData.objects.raw({"_id": id}).first()
     name = user.image_name
@@ -22,10 +31,16 @@ def get_all_images(id):
     list = [name, image]
     return list
 
-@app.route("/api/get_all_images", methods=["POST"])
-def image_list():
-    user_id = request.get_json()
-    output_list = get_all_images(user_id)
+@app.route("/api/fetch_image/<id>/<name>", methods=["GET"])
+def fetch_image(id, name):
+    image_list = get_all_images(id)
+    image_file = find_file(image_list, name)
+    return jsonify(file), 200
+
+
+@app.route("/api/get_all_images/<id>", methods=["GET"])
+def image_list(id):
+    output_list = get_all_images(id)
     return jsonify(output_list), 200
 # ----------------------------Download tab--------------------------------
 # ----------------------------User Metrics tab----------------------------
