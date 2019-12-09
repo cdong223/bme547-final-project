@@ -117,18 +117,20 @@ def validate_images():
     # Store all filepaths with corresponding image name versions from processing type
     all_images_dict = {}
     for filepath in data["filepaths"]:
-        all_images_dict[filepath].append(img_name_from_filepath(filepath, data["processing"]))
-        all_images_dict[filepath].append(img_name_from_filepath(filepath, '_original'))
+        all_images_dict[filepath][img_name_from_filepath(filepath, data["processing"])] = data["processing"]
+        all_images_dict[filepath][img_name_from_filepath(filepath, '_original')] = '_original'
 
     # Retrieve images present and not present with processing type
+    old_images = {}
+    new_images = {}
     for filepath in all_images_dict:
         # Loop through image names from db corresponding to each filepath
         for img_name in filepath:
             # Check if image_name present MAKE FUNCTION
             if is_image_present(data["username"], img_name):
-                old_images[]
+                old_images[filepath] = processing_type
             else:
-                new_images[]
+                new_images[filepath] = processing_type
 
     # Return dictionary of images present and not present
 
