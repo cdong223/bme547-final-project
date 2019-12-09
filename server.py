@@ -9,6 +9,7 @@ import logging
 import os
 import base64
 import io
+import time
 
 app = Flask(__name__)
 
@@ -147,13 +148,15 @@ def original_upload(username, filepath):
     # Set all additional values to store with image:
     image_name = img_name_from_filepath(filepath, "_original")
     print(image_name)
-    processing_time = 0  # EDIT THIS FOR OTHER FUNCTIONS
     image_size = 400  # EDIT THIS TO HAVE FUNCTION TO RETURN IMAGE SIZE
     hist_data = 0  # EDIT THIS WITH FUNCTION
     upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
     print(upload_date)
     with open(filepath, "rb") as image_file:
+        start_time = time.time()  # Better way may be to use timeit.timeit(function)
         coded = base64.b64encode(image_file.read())
+        end_time = time.time()
+        processing_time = end_time - start_time
         print(coded)
         UserData.objects.raw(
             {"_id": username}).update(
@@ -200,7 +203,7 @@ def upload_images():
         return jsonify(message), code
 
     # Check if user already has UserData collection.
-    # If not, need to create one with first file entry being the first of new_images knowing it will _original.
+    # If not, need to create one with first file entry being the first of new_images knowing it will be _original.
 
     # Begin uploading images. Handle ZIPs separately?
     new_images = data["images"]
