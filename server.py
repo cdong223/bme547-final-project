@@ -5,6 +5,7 @@ from LogIn import LogIn
 from UserData import UserData
 from UserMetrics import UserMetrics
 import logging
+import os
 
 app = Flask(__name__)
 
@@ -71,6 +72,29 @@ def validate_input_json(data, expected):
     return valid, message, code
 
 
+def isolate_image_name_from_path(filepath):
+    # Returns image name from file path
+    head, tail = os.path.split(filepath)
+    return tail
+
+
+def get_img_name(img_name, processing):
+    img_name, filetype = img_name.split('.')
+    if processing == 'orig':
+        img_name = img_name + '_original.' + filetype
+    elif processing == 'hist':
+        img_name = img_name + '_histogramEqualized.' + filetype
+    elif processing == 'cont':
+        img_name = img_name + '_contrastStretched.' + filetype
+    elif processing == 'inv':
+        img_name = img_name + '_invertedImage.' + filetype
+    elif processing == 'log':
+        img_name = img_name + '_logCompressed.' + filetype
+    else:
+        return "BAD PROCESSING TYPE"
+    return img_name
+
+
 @app.route("/api/validate_images", methods=["POST"])
 def validate_images():
     # Retrieve data sent to server
@@ -78,13 +102,22 @@ def validate_images():
 
     # Validate Input json
     expected = {"username": (str,),
-                "filepaths": (list,)}
+                "filepaths": (list,),
+                "processing": (str,)}
     valid, message, code = validate_input_json(data, expected)
     if not valid:
         logging.warning("Attempted upload json is wrong format")
         return jsonify(message), code
 
-    # Check if files present
+    # Unload ZIP files
+    img_names = []
+
+    # Loop through each filepath and store image name with appended processing
+    for filepath in data["filepaths"]:
+        head, tail = isolate_image_name_from_path(filepath)
+        img_org = get_img_name(tail, 'orig')
+        img_process = get_img_name(tail, data["processing"])
+
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
 # ----------------------------User Metrics tab----------------------------
