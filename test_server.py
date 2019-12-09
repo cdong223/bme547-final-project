@@ -81,8 +81,15 @@ def test_get_db_img_name(img_name, processing, expected):
     assert expected == img_name
 
 
+@pytest.mark.parametrize("filepath, processing, expected", [
+    ('C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+     '_original',
+     'Aviary Stock Photo 1_original.png')
+])
 def test_img_name_from_filepath(filepath, processing, expected):
     from server import img_name_from_filepath
+    img_name = img_name_from_filepath(filepath, processing)
+    assert expected == img_name
 
 
 def test_is_image_present(username, img_name, expected):
