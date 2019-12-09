@@ -137,6 +137,23 @@ def validate_images():
                 "not present": new_images}
     return jsonify(out_dict)
 
+
+@app.route("/api/upload_images", methods=["POST"])
+def upload_images():
+    # Retrieve data sent to server
+    data = request.json()
+
+    # Validate Input json
+    expected = {"username": (str,),
+                "images": (dict,)}
+    valid, message, code = validate_input_json(data, expected)
+    if not valid:
+        logging.warning("Attempted upload json is wrong format")
+        return jsonify(message), code
+
+    # Begin uploading images. Handle ZIPs separately?
+    
+
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
 # ----------------------------User Metrics tab----------------------------
