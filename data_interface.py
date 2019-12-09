@@ -181,7 +181,7 @@ def data_interface_window(username='NA'):
     all_files = []  # Stores all filepaths of files wanting to upload.
     file_display = scrolledtext.ScrolledText(upload_tab,  # Display files
                                              width=50,
-                                             height=1)
+                                             height=5)
     file_display.grid(column=1, row=1)  # Location to display files
     file_btn = Button(upload_tab,  # Choose files button
                       text="Choose Files",
