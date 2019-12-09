@@ -22,18 +22,7 @@ def database_connection():
 # ----------------------------Login Screen--------------------------------
 # -----------------------------Upload tab---------------------------------
 def validate_input_json(data, expected):
-    """
-    Validation for input json against expected structure
-
-    Args:
-        data: posted dictionary (dict)
-        expected: expected dictionary structure (dict)
-
-    Returns:
-        valid: state of validity (bool)
-        message: message regarding validity (str)
-        code: status code for validity
-    """
+    # Validates input json is as expected
     # Initialize response assuming all correct
     valid = True
     message = "Input json is valid."
@@ -75,7 +64,7 @@ def validate_input_json(data, expected):
 def isolate_image_name_from_path(filepath):
     # Returns image name from file path
     head, tail = os.path.split(filepath)
-    return tail
+    return head, tail
 
 
 def get_img_name(img_name, processing):
@@ -115,8 +104,14 @@ def validate_images():
     # Loop through each filepath and store image name with appended processing
     for filepath in data["filepaths"]:
         head, tail = isolate_image_name_from_path(filepath)
-        img_org = get_img_name(tail, 'orig')
-        img_process = get_img_name(tail, data["processing"])
+        img_names.append(get_img_name(tail, 'orig'))  # Append original image name
+        img_names.append(get_img_name(tail, data["processing"]))  # Append image name with processing type
+
+    # Loop through image names to see if present in DB
+    for img_name in img_names:
+        print(img_name)
+
+    # Return dictionary of images present and not present
 
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
