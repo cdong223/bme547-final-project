@@ -319,10 +319,33 @@ def test_log_compressed_upload(username, filepath, expected):
     LogIn.objects.raw({"_id": username}).delete()
 
 
+@pytest.mark.parametrize("t1, t2, expected", [
+    (1575993439.3773382, 1575993442.793074, "3.4157357215881348")
+])
+def test_calc_process_time(t1, t2, expected):
+    from server import calc_process_time
+    result = calc_process_time(t1, t2)
+    assert result == expected
+
+
+@pytest.mark.parametrize("image, inv_exp, expected", [
+    (np.array([[[255, 255, 255], [0, 0, 0]]], dtype=np.uint8),
+     np.array([[[0, 0, 0], [255, 255, 25]]], dtype=np.uint8),
+     False),
+    (np.array([[[255, 255, 255], [0, 0, 0]]], dtype=np.uint8),
+     np.array([[[0, 0, 0], [255, 255, 255]]], dtype=np.uint8),
+     True),
+])
+def test_invert(image, inv_exp, expected):
+    from server import invert
+    inv_img = invert(image)
+    assert np.array_equal(inv_img, inv_exp) == expected
+
+
 @pytest.mark.parametrize("username, filepath, expected", [
-    ('sm642',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     'Aviary Stock Photo 1_original.png')
+    ('unit_test_inv_img_upload',
+     'Cat.png',
+     'Cat_invertedImage.png')
 ])
 def test_inverted_image_upload(username, filepath, expected):
     from server import inverted_image_upload
@@ -348,8 +371,8 @@ def test_inverted_image_upload(username, filepath, expected):
 
 if __name__ == "__main__":
     test_database_connection()
-    test_original_upload('....',
-     '....',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     '.')
+    # test_original_upload('....',
+    #  '....',
+    #  'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+    #  '.')
     print("test_server.py Main")
