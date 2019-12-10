@@ -146,6 +146,10 @@ def test_decode_array():
     return
 
 
+def test_histogram_equalization():
+    return
+
+
 @pytest.mark.parametrize("username, filepath, expected", [
     ('sm642',
      'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
