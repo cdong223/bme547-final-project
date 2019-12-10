@@ -168,9 +168,9 @@ def data_interface_window(username='NA'):
         # Submit post request to validate files to upload (including processing) and presence in dictionary
         print("Making Validation Request")
         new_url = url + "/api/validate_images"
-        validate_dict = {"username": username,
+        validate_dict = {"username": str(username),
                          "filepaths": files,
-                         "processing": processing}
+                         "processing": str(processing)}
         r = requests.post(new_url, json=validate_dict)
         print("Made Validation Request")
         out_dict = r.json()
@@ -188,7 +188,7 @@ def data_interface_window(username='NA'):
         # For filepath not present - submit post request of files.
         print("Making Upload Request")
         new_url = url + "/api/upload_images"
-        store_dict = {"username": username,
+        store_dict = {"username": str(username),
                       "images": new_images}
         r = requests.post(new_url, json=store_dict)
         print("Made Upload Request")
