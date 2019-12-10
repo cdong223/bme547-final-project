@@ -97,6 +97,7 @@ def username_already_exists():
 
 # ------------------------------Main UI Window---------------------------------
 def data_interface_window(username='NA'):
+
     # Set-up UI window
     window = Toplevel(login_screen)
     window.title("{}'s Image Processing "  # Sets window title
@@ -275,11 +276,25 @@ def data_interface_window(username='NA'):
 
         return
 
-    A = ["2019/12/3", "1.5s", "600x600"]  # Dummy variables of image metrics
-    B = ["2019/12/4", "1.2s", "400x400"]
-    C = ["2019/12/5", "1.4s", "200x200"]
 
-    ttk.Separator(display_tab, orient=VERTICAL).grid(column=1, row=0,
+    def refresh_list2():
+        print("Refreshed")
+        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"+username
+        image_list = requests.post(get_image_list_url)
+        image_list = image_list.text
+        display_sel_2['values'] = image_list
+        return
+
+
+    def refresh_list1():
+        print("Refreshed")
+        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"+username
+        image_list = requests.post(get_image_list_url)
+        image_list = image_list.text
+        display_sel_1['values'] = image_list
+        return
+
+    ttk.Separator(display_tab, orient=VERTICAL).grid(column=1, row=1,
                                                      rowspan=10, sticky='ns')
 
     choice_1 = ttk.Label(display_tab, text="Choose picture 1 from below")
@@ -287,17 +302,16 @@ def data_interface_window(username='NA'):
     choice_2 = ttk.Label(display_tab, text="Choose picture 2 from below")
     choice_2.grid(column=2, row=1, padx=50, pady=5)
 
-    get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"+username
-    image_list = requests.post(get_image_list_url)
+
     image_name_1 = StringVar()
-    display_sel_1 = ttk.Combobox(display_tab, textvariable=image_name_1)
+    display_sel_1 = ttk.Combobox(display_tab, textvariable=image_name_1, postcommand = refresh_list1)
     display_sel_1.grid(column=0, row=2, pady=5)
-    display_sel_1['values'] = image_list
+    # display_sel_1['values'] = image_list
     display_sel_1.state(['readonly'])
     image_name_2 = StringVar()
-    display_sel_2 = ttk.Combobox(display_tab, textvariable=image_name_2)
+    display_sel_2 = ttk.Combobox(display_tab, textvariable=image_name_2, postcommand = refresh_list2)
     display_sel_2.grid(column=2, row=2, pady=5)
-    display_sel_2['values'] = image_list
+    # display_sel_2['values'] = image_list
     display_sel_2.state(['readonly'])
 
     ok_btn_left = ttk.Button(display_tab, text='ok', command=left_display)
