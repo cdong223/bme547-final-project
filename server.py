@@ -132,17 +132,18 @@ def validate_images():
     new_images = {}
     for filepath in all_images_dict:
         # Loop through image names from db corresponding to each filepath
+        old_images[filepath] = []
+        new_images[filepath] = []
         for img_name in all_images_dict[filepath]:
             # Check if image is present with processing type
             if is_image_present(data["username"], img_name):
                 # If is present, store in return dict not to process
-                old_images[filepath].append(all_images_dict[filepath][img_name])
+                old_images[filepath].append(img_name)
             else:
                 # If is not present, store in return dict to process
-                new_images[filepath].append(all_images_dict[filepath][img_name])
+                new_images[filepath].append(img_name)
 
     # Return dictionary of images present and not present
-    print("Created out_dict")
     out_dict = {"present": old_images,
                 "not present": new_images}
     return jsonify(out_dict)
