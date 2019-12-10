@@ -150,8 +150,15 @@ def test_encode_array(array, expected):
     assert expected == sum(pixel_list)
 
 
-def test_decode_array():
-    return
+@pytest.mark.parametrize("array, expected", [
+    (np.array((1, 1, 1)), [1, 1, 1])
+])
+def test_decode_array(array, expected):
+    from server import encode_array
+    from server import decode_array
+    encoded_array = encode_array(array)
+    decoded_array = decode_array(encoded_array)
+    assert expected == list(decoded_array)
 
 
 def test_histogram_equalization():
