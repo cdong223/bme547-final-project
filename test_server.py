@@ -1,5 +1,8 @@
 import pytest
 import pymongo
+import numpy as np
+import skimage
+from skimage import io
 from UserData import UserData
 from LogIn import LogIn
 
@@ -124,6 +127,17 @@ def test_is_image_present(stored_username, stored_img_name, username, img_name, 
     LogIn.objects.raw({"_id": stored_username}).delete()
 
 
+@pytest.mark.parametrize("filepath, expected", [
+    ('C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+     '720x960')
+])
+def test_get_num_pixels(filepath, expected):
+    from server import get_num_pixels
+    image = skimage.io.imread(filepath)
+    image_size = get_num_pixels(image)
+    assert expected == image_size
+
+
 @pytest.mark.parametrize("username, filepath, expected", [
     ('sm642',
      'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
@@ -147,7 +161,4 @@ def test_original_upload(username, filepath, expected):
 
 if __name__ == "__main__":
     test_database_connection()
-    test_original_upload('sm642',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     'Aviary Stock Photo 1_original.png')
     print("test_server.py Main")

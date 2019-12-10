@@ -147,14 +147,13 @@ def validate_images():
     return jsonify(out_dict)
 
 
-def get_num_pixels(filepath):
-    width, height = Image.open(filepath).size
-    image_size = str(width)+"x"+str(height)
+def get_num_pixels(image):
+    shape = image.shape
+    image_size = str(shape[1])+"x"+str(shape[0])
     return image_size
 
 
-def pixel_histogram(filepath):
-    image = skimage.io.imread(filepath)
+def pixel_histogram(image):
     red_hist = skimage.exposure.histogram(image[:, :, 0])
     green_hist = skimage.exposure.histogram(image[:, :, 1])
     blue_hist = skimage.exposure.histogram(image[:, :, 2])
@@ -166,17 +165,19 @@ def pixel_histogram(filepath):
 
 def original_upload(username, filepath):
     # Upload original image in filepath
+    image = skimage.io.imread(filepath)
+
     # Create image name
     image_name = img_name_from_filepath(filepath, "_original")
 
     # Calc image size
-    image_size = get_num_pixels(filepath)
+    image_size = get_num_pixels(image)
 
     # Store upload date
     upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
 
     # Calc histogram data
-    hist_data = pixel_histogram(filepath)
+    hist_data = pixel_histogram(image)
     with open(filepath, "rb") as image_file:
         start_time = time.time()  # Better way may be to use timeit.timeit(function)
         coded = base64.b64encode(image_file.read())
