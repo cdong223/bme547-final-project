@@ -163,7 +163,7 @@ def pixel_histogram(image):
 
 
 def is_first_upload(username):
-    return UserData.objects.raw({"_id": username}).exists()
+    return not UserData.objects.raw({"_id": username}).count()
 
 
 def encode_array(array):

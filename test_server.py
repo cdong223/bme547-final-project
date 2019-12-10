@@ -138,6 +138,26 @@ def test_get_num_pixels(filepath, expected):
     assert expected == image_size
 
 
+@pytest.mark.parametrize("stored_username, username, expected", [
+    ('....', '....', False),
+    ('....', '...', True)
+])
+def test_is_first_upload(stored_username, username, expected):
+    from server import is_first_upload
+    user = LogIn(username=stored_username)
+    user.save()
+    user_data = UserData(username=user,
+                         image_name=['.'],
+                         image=['.'],
+                         processing_time=['.'],
+                         image_size=['.'],
+                         hist_data=['.'],
+                         upload_date=['.'])
+    user_data.save()
+    value = is_first_upload(username)
+    assert expected == value
+
+
 @pytest.mark.parametrize("array, expected", [
     (np.array((1, 1, 1)), 13210)
 ])
