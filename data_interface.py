@@ -4,7 +4,7 @@ from tkinter import filedialog
 from tkinter import scrolledtext
 from tkinter import messagebox
 from PIL import ImageTk, Image
-
+import requests
 
 
 # ---------------------------Login Screen--------------------------------
@@ -202,68 +202,55 @@ def data_interface_window(username='NA'):
         # find image metrics if given image name
         if image_name_1.get() == '':
             messagebox.showerror("Error", "Please select an option first")
-        if image_name_1.get() == 'A':
-            path = "Apple.png"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(A[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(A[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(A[2]))
-        if image_name_1.get() == 'B':
-            path = "BD.jpg"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(B[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(B[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(B[2]))
-        if image_name_1.get() == 'C':
-            path = "Cat.jpg"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(C[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(C[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(C[2]))
-        print(path)
+        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image"+username+image_name_1.get()
+        image_file = requests.post(fetch_image_url)
+        image_file = image_file.text
+        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics"+username+image_name_1.get()
+        image_metrics = requests.post(fetch_metrics_url)
+        image_metrics = image_metrics.text
+
+        cpu = ttk.Label(display_tab, text="CPU Time: {}".format(image_metrics[0]))
+        size = ttk.Label(display_tab, text="Size: {}".format(image_metrics[1]))
+        timestamp = ttk.Label(display_tab, text="Timestamp: {}".format(image_metrics[2]))
+
         timestamp.grid(column=0, row=5, pady=5)
         cpu.grid(column=0, row=6, pady=5)
         size.grid(column=0, row=7, pady=5)
-        load = Image.open(path)
-        load = load.resize((150, 150), Image.ANTIALIAS)
-        render = ImageTk.PhotoImage(load)
-        img = Label(display_tab, image=render)
-        img.image = render
-        img.grid(column=0, row=4, pady=5)
+
+        histogram = image_metrics[3]
+        # load = Image.open(path)
+        # load = load.resize((150, 150), Image.ANTIALIAS)
+        # render = ImageTk.PhotoImage(load)
+        # img = Label(display_tab, image=render)
+        # img.image = render
+        # img.grid(column=0, row=4, pady=5)
         return
 
     def right_display():  # find the picture according to the name
         if image_name_2.get() == '':
             messagebox.showerror("Error", "Please select an option first")
-        if image_name_2.get() == 'A':
-            path = "Apple.png"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(A[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(A[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(A[2]))
-        if image_name_2.get() == 'B':
-            path = "BD.jpg"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(B[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(B[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(B[2]))
-            print(path)
-        if image_name_2.get() == 'C':
-            path = "Cat.jpg"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(C[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(C[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(C[2]))
-        print(path)
-        timestamp.grid(column=2, row=5, pady=5)
-        cpu.grid(column=2, row=6, pady=5)
-        size.grid(column=2, row=7, pady=5)
-        load = Image.open(path)
-        load = load.resize((150, 150), Image.ANTIALIAS)
-        render = ImageTk.PhotoImage(load)
-        img = Label(display_tab, image=render)
-        img.image = render
-        img.grid(column=2, row=4, pady=5)
+        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"+username+image_name_2.get()
+        image_file = requests.post(fetch_image_url)
+        image_file = image_file.text
+        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"+username+image_name_2.get()
+        image_metrics = requests.post(fetch_metrics_url)
+        image_metrics = image_metrics.text
+
+        cpu = ttk.Label(display_tab, text="CPU Time: {}".format(image_metrics[0]))
+        size = ttk.Label(display_tab, text="Size: {}".format(image_metrics[1]))
+        timestamp = ttk.Label(display_tab, text="Timestamp: {}".format(image_metrics[2]))
+
+        timestamp.grid(column=0, row=5, pady=5)
+        cpu.grid(column=0, row=6, pady=5)
+        size.grid(column=0, row=7, pady=5)
+
+        histogram = image_metrics[3]
+        # load = Image.open(path)
+        # load = load.resize((150, 150), Image.ANTIALIAS)
+        # render = ImageTk.PhotoImage(load)
+        # img = Label(display_tab, image=render)
+        # img.image = render
+        # img.grid(column=2, row=4, pady=5)
         return
 
     A = ["2019/12/3", "1.5s", "600x600"]  # Dummy variables of image metrics
@@ -278,7 +265,8 @@ def data_interface_window(username='NA'):
     choice_2 = ttk.Label(display_tab, text="Choose picture 2 from below")
     choice_2.grid(column=2, row=1, padx=50, pady=5)
 
-    image_list = ["A", "B", "C"]  # Need to read the actual list of image
+    get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"+username
+    image_list = requests.post(get_image_list_url)
     image_name_1 = StringVar()
     display_sel_1 = ttk.Combobox(display_tab, textvariable=image_name_1)
     display_sel_1.grid(column=0, row=2, pady=5)
