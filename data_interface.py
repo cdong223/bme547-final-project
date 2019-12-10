@@ -166,11 +166,13 @@ def data_interface_window(username='NA'):
     def upload_files(files, processing):
         print(files)
         # Submit post request to validate files to upload (including processing) and presence in dictionary
+        print("Making Validation Request")
         new_url = url + "/api/validate_images"
         validate_dict = {"username": username,
                          "filepaths": files,
                          "processing": processing}
         r = requests.post(new_url, json=validate_dict)
+        print("Made Validation Request")
         out_dict = r.json()
         if r.status_code != 200:
             print("Improper Request")
@@ -184,10 +186,12 @@ def data_interface_window(username='NA'):
         # If Continue button, move forward and delete display/reset file selection/disable upload. If not, simply return.
 
         # For filepath not present - submit post request of files.
+        print("Making Upload Request")
         new_url = url + "/api/upload_images"
         store_dict = {"username": username,
                       "images": new_images}
         r = requests.post(new_url, json=store_dict)
+        print("Made Upload Request")
         status = r.json()
         print(status)
         print(r.status_code)
