@@ -220,12 +220,12 @@ def original_upload(username, filepath):
     if is_first_upload(username):
         # If first upload, create document
         user = UserData(username=username,
-                        image_name=image_name,
-                        image=image_encode,
-                        processing_time=processing_time,
-                        image_size=image_size,
-                        hist_data=hist_encode,
-                        upload_date=upload_date)
+                        image_name=[image_name],
+                        image=[image_encode],
+                        processing_time=[processing_time],
+                        image_size=[image_size],
+                        hist_data=[hist_encode],
+                        upload_date=[upload_date])
         user.save()
     else:
         # Save image to database
