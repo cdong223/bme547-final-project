@@ -5,6 +5,7 @@ from tkinter import scrolledtext
 from tkinter import messagebox
 from PIL import ImageTk, Image
 import requests
+import pickle
 
 
 # ---------------------------Login Screen--------------------------------
@@ -218,12 +219,23 @@ def data_interface_window(username='NA'):
         size.grid(column=0, row=7, pady=5)
 
         histogram = image_metrics[3]
-        # load = Image.open(path)
-        # load = load.resize((150, 150), Image.ANTIALIAS)
-        # render = ImageTk.PhotoImage(load)
-        # img = Label(display_tab, image=render)
-        # img.image = render
-        # img.grid(column=0, row=4, pady=5)
+        decoded_image = pickle.loads(image_file)
+        decoded_histo = pickle.loads(histogram)
+        image_display = Image.fromarray(decoded_image, 'RGB')
+        histo_display = Image.fromarray(decoded_histo, 'RGB')
+
+        image_display = image_display.resize((150, 150), Image.ANTIALIAS)
+        render = ImageTk.PhotoImage(image_display)
+        img = Label(display_tab, image=render)
+        img.image = render
+        img.grid(column=0, row=4, pady=5)
+
+        histo_display = histo_display.resize((100, 100), Image.ANTIALIAS)
+        render2 = ImageTk.PhotoImage(histo_display)
+        img2 = Label(display_tab, image=render2)
+        img2.image = render2
+        img2.grid(column=0, row=8, pady=5)
+
         return
 
     def right_display():  # find the picture according to the name
@@ -240,17 +252,27 @@ def data_interface_window(username='NA'):
         size = ttk.Label(display_tab, text="Size: {}".format(image_metrics[1]))
         timestamp = ttk.Label(display_tab, text="Timestamp: {}".format(image_metrics[2]))
 
-        timestamp.grid(column=0, row=5, pady=5)
-        cpu.grid(column=0, row=6, pady=5)
-        size.grid(column=0, row=7, pady=5)
+        timestamp.grid(column=2, row=5, pady=5)
+        cpu.grid(column=2, row=6, pady=5)
+        size.grid(column=2, row=7, pady=5)
 
         histogram = image_metrics[3]
-        # load = Image.open(path)
-        # load = load.resize((150, 150), Image.ANTIALIAS)
-        # render = ImageTk.PhotoImage(load)
-        # img = Label(display_tab, image=render)
-        # img.image = render
-        # img.grid(column=2, row=4, pady=5)
+        decoded_image = pickle.loads(image_file)
+        decoded_histo = pickle.loads(histogram)
+        image_display = Image.fromarray(decoded_image, 'RGB')
+        histo_display = Image.fromarray(decoded_histo, 'RGB')
+        image_display = image_display.resize((150, 150), Image.ANTIALIAS)
+        render = ImageTk.PhotoImage(image_display)
+        img = Label(display_tab, image=render)
+        img.image = render
+        img.grid(column=2, row=4, pady=5)
+
+        histo_display = histo_display.resize((100, 100), Image.ANTIALIAS)
+        render2 = ImageTk.PhotoImage(histo_display)
+        img2 = Label(display_tab, image=render2)
+        img2.image = render2
+        img2.grid(column=2, row=8, pady=5)
+
         return
 
     A = ["2019/12/3", "1.5s", "600x600"]  # Dummy variables of image metrics
