@@ -387,9 +387,8 @@ def inverted_image_upload(username, filepath):
 
 @app.route("/api/upload_images", methods=["POST"])
 def upload_images():
-    print("Made Upload Request")
     # Retrieve data sent to server
-    data = request.json()
+    data = request.get_json()
 
     # Validate Input json
     expected = {"username": (str,),
@@ -402,20 +401,20 @@ def upload_images():
     # Begin uploading images. Handle ZIPs separately?
     new_images = data["images"]
     for filepath in new_images:
-        for processing_type in new_images[filepath]:
-            print("Uploading Image")
-            if processing_type == '_original':
-                original_upload(username, filepath)
-            elif processing_type == '_histogramEqualized':
-                histogram_equalized_upload(username, filepath)
-            elif processing_type == '_contrastStretched':
-                contrast_stretched_upload(username, filepath)
-            elif processing_type == '_logCompressed':
-                log_compressed_upload(username, filepath)
-            elif processing_type == '_invertedImage':
-                inverted_image_upload(username, filepath)
-        else:
-            return jsonfiy("Invalid Computation Type"), 400
+        for image_name in new_images[filepath]:
+            processing_type = image_name.replace(".", "_").split("_")[-2]
+            if processing_type == 'original':
+                original_upload(data["username"], filepath)
+            elif processing_type == 'histogramEqualized':
+                histogram_equalized_upload(data["username"], filepath)
+            elif processing_type == 'contrastStretched':
+                contrast_stretched_upload(data["username"], filepath)
+            elif processing_type == 'logCompressed':
+                log_compressed_upload(data["username"], filepath)
+            elif processing_type == 'invertedImage':
+                inverted_image_upload(data["username"], filepath)
+            else:
+                return jsonify("Invalid Computation Type"), 400
 
     return jsonify("Uploaded all images successfully")
 # -----------------------------Display tab--------------------------------
