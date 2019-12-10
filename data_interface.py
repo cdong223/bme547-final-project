@@ -197,23 +197,27 @@ def data_interface_window(username='NA'):
                     pady=5,
                     padx=100)
 
-
     # ----------------------------Display tab---------------------------------
     def left_display():  # find the picture according to the name
         # Only dummy variables are used now, but should be easy to
         # find image metrics if given image name
         if image_name_1.get() == '':
             messagebox.showerror("Error", "Please select an option first")
-        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image"+username+image_name_1.get()
+        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image"\
+                          + username + image_name_1.get()
         image_file = requests.post(fetch_image_url)
         image_file = image_file.text
-        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics"+username+image_name_1.get()
+        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics"\
+                            + username + image_name_1.get()
         image_metrics = requests.post(fetch_metrics_url)
         image_metrics = image_metrics.text
 
-        cpu = ttk.Label(display_tab, text="CPU Time: {}".format(image_metrics[0]))
-        size = ttk.Label(display_tab, text="Size: {}".format(image_metrics[1]))
-        timestamp = ttk.Label(display_tab, text="Timestamp: {}".format(image_metrics[2]))
+        cpu = ttk.Label(display_tab, text="CPU Time: "
+                                          "{}".format(image_metrics[0]))
+        size = ttk.Label(display_tab, text="Size: "
+                                           "{}".format(image_metrics[1]))
+        timestamp = ttk.Label(display_tab, text="Timestamp: "
+                                                "{}".format(image_metrics[2]))
 
         timestamp.grid(column=0, row=5, pady=5)
         cpu.grid(column=0, row=6, pady=5)
@@ -242,16 +246,21 @@ def data_interface_window(username='NA'):
     def right_display():  # find the picture according to the name
         if image_name_2.get() == '':
             messagebox.showerror("Error", "Please select an option first")
-        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"+username+image_name_2.get()
+        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"\
+                          + username + image_name_2.get()
         image_file = requests.post(fetch_image_url)
         image_file = image_file.text
-        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"+username+image_name_2.get()
+        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
+                            + username + image_name_2.get()
         image_metrics = requests.post(fetch_metrics_url)
         image_metrics = image_metrics.text
 
-        cpu = ttk.Label(display_tab, text="CPU Time: {}".format(image_metrics[0]))
-        size = ttk.Label(display_tab, text="Size: {}".format(image_metrics[1]))
-        timestamp = ttk.Label(display_tab, text="Timestamp: {}".format(image_metrics[2]))
+        cpu = ttk.Label(display_tab, text="CPU Time: "
+                                          "{}".format(image_metrics[0]))
+        size = ttk.Label(display_tab, text="Size: "
+                                           "{}".format(image_metrics[1]))
+        timestamp = ttk.Label(display_tab, text="Timestamp: "
+                                                "{}".format(image_metrics[2]))
 
         timestamp.grid(column=2, row=5, pady=5)
         cpu.grid(column=2, row=6, pady=5)
@@ -276,19 +285,19 @@ def data_interface_window(username='NA'):
 
         return
 
-
     def refresh_list2():
         print("Refreshed")
-        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"+username
+        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
+                             + username
         image_list = requests.post(get_image_list_url)
         image_list = image_list.text
         display_sel_2['values'] = image_list
         return
 
-
     def refresh_list1():
         print("Refreshed")
-        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"+username
+        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
+                             + username
         image_list = requests.post(get_image_list_url)
         image_list = image_list.text
         display_sel_1['values'] = image_list
@@ -302,14 +311,15 @@ def data_interface_window(username='NA'):
     choice_2 = ttk.Label(display_tab, text="Choose picture 2 from below")
     choice_2.grid(column=2, row=1, padx=50, pady=5)
 
-
     image_name_1 = StringVar()
-    display_sel_1 = ttk.Combobox(display_tab, textvariable=image_name_1, postcommand = refresh_list1)
+    display_sel_1 = ttk.Combobox(display_tab, textvariable=image_name_1,
+                                 postcommand=refresh_list1)
     display_sel_1.grid(column=0, row=2, pady=5)
     # display_sel_1['values'] = image_list
     display_sel_1.state(['readonly'])
     image_name_2 = StringVar()
-    display_sel_2 = ttk.Combobox(display_tab, textvariable=image_name_2, postcommand = refresh_list2)
+    display_sel_2 = ttk.Combobox(display_tab, textvariable=image_name_2,
+                                 postcommand=refresh_list2)
     display_sel_2.grid(column=2, row=2, pady=5)
     # display_sel_2['values'] = image_list
     display_sel_2.state(['readonly'])
@@ -396,7 +406,6 @@ def data_interface_window(username='NA'):
     invert_label.grid(row=7, column=0, sticky=E)
     invert_num = ttk.Label(metrics_tab, text="")
     invert_num.grid(row=7, column=1, sticky=W)
-
 
     # Run Window until close
     window.mainloop()
