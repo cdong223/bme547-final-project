@@ -410,9 +410,9 @@ def upload_images():
             elif processing_type == '_invertedImage':
                 inverted_image_upload(username, filepath)
         else:
-            return "Invalid Computation Type", 400
+            return jsonfiy("Invalid Computation Type"), 400
 
-    return "Uploaded all images successfully"
+    return jsonify("Uploaded all images successfully")
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
 # ----------------------------User Metrics tab----------------------------
