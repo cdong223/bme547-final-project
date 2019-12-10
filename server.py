@@ -283,11 +283,13 @@ def contrast_stretched_upload(username, filepath):
 
     # Process image and encode it.
     start_time = time.time()
-    #CONTRAST STRETCHED IMAGE PROCESSING AND ENCODING OF IMAGE
+    p2, p98 = np.percentile(image, (2, 98))
+    img_rescale = exposure.rescale_intensity(image, in_range=(p2, p98))
+    image_encode = encode_array(img_rescale)
     processing_time = str(time.time() - start_time)
 
     # Create image name
-    image_name = img_name_from_filepath(filepath, "_original")
+    image_name = img_name_from_filepath(filepath, "_contrastStretched")
 
     # Calc image size
     image_size = get_num_pixels(image)
