@@ -139,9 +139,11 @@ def test_get_num_pixels(filepath, expected):
 
 
 def test_encode_array():
+    return
 
 
 def test_decode_array():
+    return
 
 
 @pytest.mark.parametrize("username, filepath, expected", [
@@ -154,9 +156,98 @@ def test_original_upload(username, filepath, expected):
     user = LogIn(username=username)
     user.save()
     user_data = UserData(username=user,
-                         image_name=['.'])
+                         image_name=['.'],
+                         image=['.'],
+                         processing_time=['.'],
+                         image_size=['.'],
+                         hist_data=['.'],
+                         upload_date=['.'])
     user_data.save()
     original_upload(username, filepath)
+    users = UserData.objects.raw({"_id": username})
+    for user in users:
+        stored_name = user.image_name
+    assert expected == stored_name[1]
+    UserData.objects.raw({"_id": username}).delete()
+    LogIn.objects.raw({"_id": username}).delete()
+
+
+def test_histogram_equalized_upload():
+    from server import histogram_equalized_upload
+    user = LogIn(username=username)
+    user.save()
+    user_data = UserData(username=user,
+                         image_name=['.'],
+                         image=['.'],
+                         processing_time=['.'],
+                         image_size=['.'],
+                         hist_data=['.'],
+                         upload_date=['.'])
+    user_data.save()
+    histogram_equalized_upload(username, filepath)
+    users = UserData.objects.raw({"_id": username})
+    for user in users:
+        stored_name = user.image_name
+    assert expected == stored_name[1]
+    UserData.objects.raw({"_id": username}).delete()
+    LogIn.objects.raw({"_id": username}).delete()
+
+
+def test_contrast_stretched_upload():
+    from server import contrast_stretched_upload
+    user = LogIn(username=username)
+    user.save()
+    user_data = UserData(username=user,
+                         image_name=['.'],
+                         image=['.'],
+                         processing_time=['.'],
+                         image_size=['.'],
+                         hist_data=['.'],
+                         upload_date=['.'])
+    user_data.save()
+    contrast_stretched_upload(username, filepath)
+    users = UserData.objects.raw({"_id": username})
+    for user in users:
+        stored_name = user.image_name
+    assert expected == stored_name[1]
+    UserData.objects.raw({"_id": username}).delete()
+    LogIn.objects.raw({"_id": username}).delete()
+
+
+def test_log_compressed_upload():
+    from server import log_compressed_upload
+    user = LogIn(username=username)
+    user.save()
+    user_data = UserData(username=user,
+                         image_name=['.'],
+                         image=['.'],
+                         processing_time=['.'],
+                         image_size=['.'],
+                         hist_data=['.'],
+                         upload_date=['.'])
+    user_data.save()
+    log_compressed_upload(username, filepath)
+    users = UserData.objects.raw({"_id": username})
+    for user in users:
+        stored_name = user.image_name
+    assert expected == stored_name[1]
+    UserData.objects.raw({"_id": username}).delete()
+    LogIn.objects.raw({"_id": username}).delete()
+
+
+def test_inverted_image_upload():
+    from server import inverted_image_upload
+    user = LogIn(username=username)
+    user.save()
+    user_data = UserData(username=user,
+                         image_name=['.'],
+                         image=['.'],
+                         processing_time=['.'],
+                         image_size=['.'],
+                         hist_data=['.'],
+                         upload_date=['.'])
+    user_data.save()
+    inverted_image_upload(username, filepath)
     users = UserData.objects.raw({"_id": username})
     for user in users:
         stored_name = user.image_name
@@ -168,3 +259,6 @@ def test_original_upload(username, filepath, expected):
 if __name__ == "__main__":
     test_database_connection()
     print("test_server.py Main")
+    test_original_upload('sm642',
+     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+     'Aviary Stock Photo 1_original.png')
