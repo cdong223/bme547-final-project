@@ -174,6 +174,17 @@ def decode_array(array):
     return decoded_array
 
 
+def histogram_equalization(image):
+    r = image[:, :, 0]
+    g = image[:, :, 1]
+    b = image[:, :, 2]
+    r_hist = skimage.exposure.histogram(r)
+    g_hist = skimage.exposure.histogram(g)
+    b_hist = skimage.exposure.histogram(b)
+    hist_image = np.dstack((r_hist, g_hist, b_hist))
+    return hist_image
+
+
 def original_upload(username, filepath):
     # Read original image from filepath
     image = skimage.io.imread(filepath)
@@ -216,7 +227,8 @@ def histogram_equalized_upload(username, filepath):
 
     # Process image and encode it.
     start_time = time.time()
-    #HISTOGRAM IMAGE PROCESSING AND ENCODING OF IMAGE
+    hist_equalized_image = histogram_equalization(image)
+    image_encode = encode_array(hist_equalized_image)
     processing_time = str(time.time() - start_time)
 
     # Create image name
