@@ -424,4 +424,4 @@ def upload_images():
 
 if __name__ == "__main__":
     database_connection()
-    app.run()
+    app.run(host='0.0.0.0')
