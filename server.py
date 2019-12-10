@@ -1,19 +1,18 @@
 from flask import Flask, jsonify, request
 from datetime import datetime
 from pymodm import connect, MongoModel, fields
-from PIL import Image
 from LogIn import LogIn
 from UserData import UserData
 from UserMetrics import UserMetrics
 from skimage import exposure, io, color
+from bson.binary import Binary
+import pickle
 import skimage
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import logging
 import os
-import base64
-import io
 import time
 
 app = Flask(__name__)
@@ -164,7 +163,7 @@ def pixel_histogram(image):
 
 
 def original_upload(username, filepath):
-    # Upload original image in filepath
+    # Read original image from filepath
     image = skimage.io.imread(filepath)
 
     # Create image name
@@ -173,26 +172,29 @@ def original_upload(username, filepath):
     # Calc image size
     image_size = get_num_pixels(image)
 
-    # Store upload date
+    # Get date and time
     upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
 
-    # Calc histogram data
+    # Calc histogram data. Produces {"red": ndarray, "green....}
+    # Use each color spectrum for analysis via processing, then
+    # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    with open(filepath, "rb") as image_file:
-        start_time = time.time()  # Better way may be to use timeit.timeit(function)
-        coded = base64.b64encode(image_file.read())
-        end_time = time.time()
+    hist_encode = Binary(pickle.dumps(hist_data, protocol=3))
 
-        # Calc CPU processing time
-        processing_time = str(end_time - start_time)
-        UserData.objects.raw(
-            {"_id": username}).update(
-            {"$push": {"image_name": image_name,
-                       "image": coded,
-                       "processing_time": processing_time,
-                       "image_size": image_size,
-                       "hist_data": hist_data,
-                       "upload_date": upload_date}})
+    # Process image and encode it.
+    start_time = time.time()
+    image_encode = Binary(pickle.dumps(image, protocol=3))
+    processing_time = str(time.time() - start_time)
+
+    # Save image to database
+    UserData.objects.raw(
+        {"_id": username}).update(
+         {"$push": {"image_name": image_name,
+                    "image": image_encode,
+                    "processing_time": processing_time,
+                    "image_size": image_size,
+                    "hist_data": hist_encode,
+                    "upload_date": upload_date}})
     return
 
 
