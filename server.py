@@ -106,7 +106,6 @@ def is_image_present(username, img_name):
 
 @app.route("/api/validate_images", methods=["POST"])
 def validate_images():
-    print("Made Validating Images Request")
     # Retrieve data sent to server
     data = request.get_json()  # Returns native dictionary
 
@@ -124,9 +123,9 @@ def validate_images():
     # Store all filepaths with corresponding image name versions from processing type
     all_images_dict = {}
     for filepath in data["filepaths"]:
+        all_images_dict[filepath] = {}
         all_images_dict[filepath][img_name_from_filepath(filepath, '_original')] = '_original'
         all_images_dict[filepath][img_name_from_filepath(filepath, data["processing"])] = data["processing"]
-    print("Created all_images_dict")
 
     # Retrieve images present and not present with processing type
     old_images = {}
