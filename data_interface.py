@@ -187,8 +187,10 @@ def data_interface_window(username='NA'):
         new_url = url + "/api/upload_images"
         store_dict = {"username": username,
                       "images": new_images}
-        r = requests.post(new_url, json=validate_dict)
-
+        r = requests.post(new_url, json=store_dict)
+        status = r.json()
+        print(status)
+        print(r.status_code)
         # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
         reset_selection(files)
