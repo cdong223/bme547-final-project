@@ -162,9 +162,62 @@ def pixel_histogram(image):
     return hist_dict
 
 
+def encode_array(array):
+    # Encoding of 3darray to save in database
+    encoded_array = Binary(pickle.dumps(array, protocol=3))
+    return encoded_array
+
+
+def decode_array(array):
+    # Decoding of 3darray to use for processing
+    decoded_array = pickle.loads(array)
+    return decoded_array
+
+
 def original_upload(username, filepath):
     # Read original image from filepath
     image = skimage.io.imread(filepath)
+
+    # Process image and encode it.
+    start_time = time.time()
+    image_encode = encode_array(image)
+    processing_time = str(time.time() - start_time)
+
+    # Create image name
+    image_name = img_name_from_filepath(filepath, "_original")
+
+    # Calc image size
+    image_size = get_num_pixels(image)
+
+    # Get date and time
+    upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
+
+    # Calc histogram data. Produces {"red": ndarray, "green....}
+    # Use each color spectrum for analysis via processing, then
+    # concatenate back together with img = np.dstack(red, green, blue)
+    hist_data = pixel_histogram(image)
+    hist_encode = encode_array(hist_data)
+
+    # Save image to database
+    UserData.objects.raw(
+        {"_id": username}).update(
+         {"$push": {"image_name": image_name,
+                    "image": image_encode,
+                    "processing_time": processing_time,
+                    "image_size": image_size,
+                    "hist_data": hist_encode,
+                    "upload_date": upload_date}})
+    return
+
+
+def histogram_equalized_upload(username, filepath):
+    # Read original image from filepath
+    image = skimage.io.imread(filepath)
+
+    # Process image and encode it.
+    start_time = time.time()
+    #HISTOGRAM IMAGE PROCESSING AND ENCODING OF IMAGE
+    processing_time = str(time.time() - start_time)
 
     # Create image name
     image_name = img_name_from_filepath(filepath, "_original")
@@ -181,25 +234,15 @@ def original_upload(username, filepath):
     hist_data = pixel_histogram(image)
     hist_encode = Binary(pickle.dumps(hist_data, protocol=3))
 
-    # Process image and encode it.
-    start_time = time.time()
-    image_encode = Binary(pickle.dumps(image, protocol=3))
-    processing_time = str(time.time() - start_time)
-
     # Save image to database
     UserData.objects.raw(
         {"_id": username}).update(
-         {"$push": {"image_name": image_name,
-                    "image": image_encode,
-                    "processing_time": processing_time,
-                    "image_size": image_size,
-                    "hist_data": hist_encode,
-                    "upload_date": upload_date}})
-    return
-
-
-def histogram_equalized_upload(username, filepath):
-    # Upload histogram equalized image from filepath
+        {"$push": {"image_name": image_name,
+                   "image": image_encode,
+                   "processing_time": processing_time,
+                   "image_size": image_size,
+                   "hist_data": hist_encode,
+                   "upload_date": upload_date}})
     return
 
 
