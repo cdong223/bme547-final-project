@@ -184,8 +184,10 @@ def data_interface_window(username='NA'):
         # If Continue button, move forward and delete display/reset file selection/disable upload. If not, simply return.
 
         # For filepath not present - submit post request of files.
+        new_url = url + "/api/upload_images"
         store_dict = {"username": username,
                       "images": new_images}
+        r = requests.post(new_url, json=validate_dict)
 
         # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
