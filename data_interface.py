@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import scrolledtext
+from tkinter import messagebox
 from PIL import ImageTk, Image
 
 
@@ -27,7 +28,7 @@ def login_window():
     # New user command
     def validateNewUser():
         # user = UserMetrics.objects.raw({"_id": username.get()})
-        # if(user.count() != 0):  
+        # if(user.count() != 0):
         if(username.get() == "bad"):  # TEMPORARY (future database connection)
             username_already_exists()
         else:
@@ -199,6 +200,8 @@ def data_interface_window(username='NA'):
     def left_display():  # find the picture according to the name
         # Only dummy variables are used now, but should be easy to
         # find image metrics if given image name
+        if image_name_1.get() == '':
+            messagebox.showerror("Error", "Please select an option first")
         if image_name_1.get() == 'A':
             path = "Apple.png"
             timestamp = ttk.Label(display_tab,
@@ -230,6 +233,8 @@ def data_interface_window(username='NA'):
         return
 
     def right_display():  # find the picture according to the name
+        if image_name_2.get() == '':
+            messagebox.showerror("Error", "Please select an option first")
         if image_name_2.get() == 'A':
             path = "Apple.png"
             timestamp = ttk.Label(display_tab,
@@ -367,7 +372,7 @@ def data_interface_window(username='NA'):
     invert_label.grid(row=7, column=0, sticky=E)
     invert_num = ttk.Label(metrics_tab, text="")
     invert_num.grid(row=7, column=1, sticky=W)
-    
+
 
     # Run Window until close
     window.mainloop()
