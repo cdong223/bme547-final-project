@@ -181,23 +181,6 @@ def decode_array(array):
     return decoded_array
 
 
-def contrast_stretching(image):
-    r = image[:, :, 0]
-    g = image[:, :, 1]
-    b = image[:, :, 2]
-    rmax = np.amax(r)
-    gmax = np.amax(g)
-    bmax = np.amax(b)
-    rmin = np.amin(r)
-    gmin = np.amin(g)
-    bmin = np.amin(b)
-    rout = (r-rmin)*(255/(rmax-rmin))
-    gout = (g-gmin)*(255/(gmax-gmin))
-    bout = (b-bmin)*(255/(bmax-bmin))
-    cont_image = np.dstack((rout, gout, bout))
-    return cont_image
-
-
 def histogram_equalization(image):
     r = image[:, :, 0]
     g = image[:, :, 1]
@@ -300,8 +283,9 @@ def contrast_stretched_upload(username, filepath):
 
     # Process image and encode it.
     start_time = time.time()
-    contrast_stretched_image = contrast_stretching(image)
-    image_encode = encode_array(contrast_stretched_image)    
+    p2, p98 = np.percentile(image, (2, 98))
+    img_rescale = exposure.rescale_intensity(image, in_range=(p2, p98))
+    image_encode = encode_array(img_rescale)
     processing_time = str(time.time() - start_time)
 
     # Create image name
