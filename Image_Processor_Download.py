@@ -4,7 +4,7 @@ from tkinter import ttk
 def design_download_window():
     """Main GUI User Interface
 
-    This section on consists of the download user interface.
+    This section consists of the download user interface.
     This consists of a download button, three radio options in which
     choose file format, and a saved images button to select filenames
     that are currently available.
@@ -13,6 +13,41 @@ def design_download_window():
 
     :return :
     """
+
+    selected_saved_images = []
+
+
+    def image_format_execution():
+        """Image Format Label
+
+        This section adds the format in which the user wishes to download
+        the images. Using if statements and for loops, the function add the
+        necessary endings to each element in the array. If an option is not
+        selected, a pop up notification will appear.
+
+        :param :
+
+        :return :
+        """
+        if image_type.get() == "JPEG":
+            for i in range(0,len(selected_saved_images)):
+                selected_saved_images[i] = selected_saved_images[i] + ".JPEG"
+                print(selected_saved_images)
+
+        elif image_type.get() == "PNG":
+            for i in range(0,len(selected_saved_images)):
+                selected_saved_images[i] = selected_saved_images[i] + ".PNG"
+                print(selected_saved_images)
+
+        elif image_type.get() == "TIFF":
+            for i in range(0,len(selected_saved_images)):
+                selected_saved_images[i] = selected_saved_images[i] + ".TIFF"
+                print(selected_saved_images)
+
+        else:
+            messagebox.showerror("Missing Image Format", "Please select an image format.")
+        return
+
 
     root_download = Tk()
 
