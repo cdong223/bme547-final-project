@@ -14,10 +14,27 @@ def design_download_window():
     :return :
     """
 
-    selected_saved_images = []
+    saved_images = ["bd1", "blue", "yepp"]
+    test_image_format = []
+
+    def download_button_execution():
+        """ Download Button Execution
+        This function uses an if statement to decide if an image name
+        has been selected. If so, it then activates the image_format_execution
+        function. If not, a pop up notification appears.
+
+        :param :
+
+        :return :
+        """
+        if not selected_saved_images:
+            messagebox.showerror("Missing Image", "No image(s) selected")
+        else:
+            image_format_execution()
+        return
 
 
-    def image_format_execution():
+    def image_format_execution(test_image_format, test_image_type):
         """Image Format Label
 
         This section adds the format in which the user wishes to download
@@ -46,7 +63,8 @@ def design_download_window():
 
         else:
             messagebox.showerror("Missing Image Format", "Please select an image format.")
-        return
+        test_image_format = selected_saved_images
+        return test_image_format
 
 
     root_download = Tk()
