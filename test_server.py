@@ -161,8 +161,25 @@ def test_decode_array(array, expected):
     assert expected == list(decoded_array)
 
 
-def test_histogram_equalization():
-    return
+@pytest.mark.parametrize("image, expected", [
+    (np.array(([[[1, 2, 3],
+                 [4, 5, 6],
+                 [7, 8, 9]],
+                [[1, 2, 3],
+                 [4, 5, 6],
+                 [7, 8, 9]],
+                [[1, 2, 3],
+                 [4, 5, 6],
+                 [7, 8, 9]]])), [[9, 9, 9],
+                                 [28, 35, 42]])
+])
+def test_histogram_equalization(image, expected):
+    from server import histogram_equalization
+    hist_image = histogram_equalization(image)
+    sums = []
+    for row in hist_image:
+        sums.append(list(sum(row)))
+    assert expected == sums
 
 
 @pytest.mark.parametrize("username, filepath, expected", [
