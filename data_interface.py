@@ -5,7 +5,6 @@ from tkinter import scrolledtext
 from PIL import ImageTk, Image
 
 
-
 # ---------------------------Login Screen--------------------------------
 def login_window():
     # Initialize global variables
@@ -193,7 +192,6 @@ def data_interface_window(username='NA'):
                     pady=5,
                     padx=100)
 
-
     # ----------------------------Display tab---------------------------------
     def left_display():  # find the picture according to the name
         # Only dummy variables are used now, but should be easy to
@@ -366,7 +364,6 @@ def data_interface_window(username='NA'):
     invert_label.grid(row=7, column=0, sticky=E)
     invert_num = ttk.Label(metrics_tab, text="")
     invert_num.grid(row=7, column=1, sticky=W)
-
 
     # Run Window until close
     window.mainloop()
