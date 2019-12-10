@@ -106,6 +106,7 @@ def is_image_present(username, img_name):
 
 @app.route("/api/validate_images", methods=["POST"])
 def validate_images():
+    print("Made Validating Images Request")
     # Retrieve data sent to server
     data = request.get_json()  # Returns native dictionary
 
@@ -125,6 +126,7 @@ def validate_images():
     for filepath in data["filepaths"]:
         all_images_dict[filepath][img_name_from_filepath(filepath, '_original')] = '_original'
         all_images_dict[filepath][img_name_from_filepath(filepath, data["processing"])] = data["processing"]
+    print("Created all_images_dict")
 
     # Retrieve images present and not present with processing type
     old_images = {}
@@ -141,6 +143,7 @@ def validate_images():
                 new_images[filepath].append(all_images_dict[filepath][img_name])
 
     # Return dictionary of images present and not present
+    print("Created out_dict")
     out_dict = {"present": old_images,
                 "not present": new_images}
     return jsonify(out_dict)
@@ -384,6 +387,7 @@ def inverted_image_upload(username, filepath):
 
 @app.route("/api/upload_images", methods=["POST"])
 def upload_images():
+    print("Made Upload Request")
     # Retrieve data sent to server
     data = request.json()
 
@@ -399,6 +403,7 @@ def upload_images():
     new_images = data["images"]
     for filepath in new_images:
         for processing_type in new_images[filepath]:
+            print("Uploading Image")
             if processing_type == '_original':
                 original_upload(username, filepath)
             elif processing_type == '_histogramEqualized':
