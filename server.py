@@ -260,7 +260,7 @@ def histogram_equalized_upload(username, filepath):
     processing_time = str(time.time() - start_time)
 
     # Create image name
-    image_name = img_name_from_filepath(filepath, "_original")
+    image_name = img_name_from_filepath(filepath, "_histogramEqualized")
 
     # Calc image size
     image_size = get_num_pixels(image)
@@ -296,7 +296,7 @@ def contrast_stretched_upload(username, filepath):
     processing_time = str(time.time() - start_time)
 
     # Create image name
-    image_name = img_name_from_filepath(filepath, "_original")
+    image_name = img_name_from_filepath(filepath, "_contrastStretched")
 
     # Calc image size
     image_size = get_num_pixels(image)
@@ -332,7 +332,7 @@ def log_compressed_upload(username, filepath):
     processing_time = str(time.time() - start_time)
 
     # Create image name
-    image_name = img_name_from_filepath(filepath, "_original")
+    image_name = img_name_from_filepath(filepath, "_logCompressed")
 
     # Calc image size
     image_size = get_num_pixels(image)
@@ -392,7 +392,7 @@ def inverted_image_upload(username, filepath):
                    "processing_time": processing_time,
                    "image_size": inv_size,
                    "hist_data": hist_encoded,
-                   "upload_date": upload_time}})
+                   "upload_date": upload_date}})
     return
 
 
