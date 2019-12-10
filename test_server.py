@@ -138,6 +138,12 @@ def test_get_num_pixels(filepath, expected):
     assert expected == image_size
 
 
+def test_encode_array():
+
+
+def test_decode_array():
+
+
 @pytest.mark.parametrize("username, filepath, expected", [
     ('sm642',
      'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
