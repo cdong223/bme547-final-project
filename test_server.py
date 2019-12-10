@@ -206,7 +206,7 @@ def test_histogram_equalization(image, expected):
     ('....',
      '....',
      'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     ','),
+     '.'),
     ('....',
      '...',
      'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
@@ -224,13 +224,17 @@ def test_original_upload(stored_username, username, filepath, expected):
                          hist_data=['.'],
                          upload_date=['.'])
     user_data.save()
+    user = LogIn(username=username)
+    user.save()
     original_upload(username, filepath)
     users = UserData.objects.raw({"_id": username})
     stored_name = ''
     for user in users:
         stored_name = user.image_name
     assert expected == stored_name[0]
+    UserData.objects.raw({"_id": stored_username}).delete()
     UserData.objects.raw({"_id": username}).delete()
+    LogIn.objects.raw({"_id": stored_username}).delete()
     LogIn.objects.raw({"_id": username}).delete()
 
 
@@ -344,4 +348,8 @@ def test_inverted_image_upload(username, filepath, expected):
 
 if __name__ == "__main__":
     test_database_connection()
+    test_original_upload('....',
+     '....',
+     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+     '.')
     print("test_server.py Main")
