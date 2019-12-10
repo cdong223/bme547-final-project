@@ -380,21 +380,25 @@ def upload_images():
         return jsonify(message), code
 
     # Check if user already has UserData collection.
+    new_images = data["images"]
+    if is_first_image(username):
+        first_original_upload(username, list(new_images.keys())[0])
+
     # If not, need to create one with first file entry being the first of new_images knowing it will be _original.
 
     # Begin uploading images. Handle ZIPs separately?
-    new_images = data["images"]
     for filepath in new_images:
-        if new_images[filepath] == '_original':
-            original_upload(username, filepath)
-        elif new_images[filepath] == '_histogramEqualized':
-            histogram_equalized_upload(username, filepath)
-        elif new_images[filepath] == '_contrastStretched':
-            contrast_stretched_upload(username, filepath)
-        elif new_images[filepath] == '_logCompressed':
-            log_compressed_upload(username, filepath)
-        elif new_images[filepath] == '_invertedImage':
-            inverted_image_upload(username, filepath)
+        for processing_type in new_images[filepath]:
+            if processing_type == '_original':
+                original_upload(username, filepath)
+            elif processing_type == '_histogramEqualized':
+                histogram_equalized_upload(username, filepath)
+            elif processing_type == '_contrastStretched':
+                contrast_stretched_upload(username, filepath)
+            elif processing_type == '_logCompressed':
+                log_compressed_upload(username, filepath)
+            elif processing_type == '_invertedImage':
+                inverted_image_upload(username, filepath)
         else:
             return "Invalid Computation Type", 400
 
