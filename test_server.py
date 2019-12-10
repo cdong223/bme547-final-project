@@ -156,6 +156,8 @@ def test_is_first_upload(stored_username, username, expected):
     user_data.save()
     value = is_first_upload(username)
     assert expected == value
+    UserData.objects.raw({"_id": stored_username}).delete()
+    LogIn.objects.raw({"_id": stored_username}).delete()
 
 
 @pytest.mark.parametrize("array, expected", [
