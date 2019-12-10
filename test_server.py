@@ -138,8 +138,16 @@ def test_get_num_pixels(filepath, expected):
     assert expected == image_size
 
 
-def test_encode_array():
-    return
+@pytest.mark.parametrize("array, expected", [
+    (np.array((1, 1, 1)), 13210)
+])
+def test_encode_array(array, expected):
+    from server import encode_array
+    encoded_array = encode_array(array)
+    pixel_list = []
+    for pixel in encoded_array:
+        pixel_list.append(pixel)
+    assert expected == sum(pixel_list)
 
 
 def test_decode_array():
