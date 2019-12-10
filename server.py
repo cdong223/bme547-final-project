@@ -105,7 +105,6 @@ def is_image_present(username, img_name):
 
 @app.route("/api/validate_images", methods=["POST"])
 def validate_images():
-    print("Made Validating Images Request")
     # Retrieve data sent to server
     data = request.get_json()  # Returns native dictionary
 
@@ -123,32 +122,31 @@ def validate_images():
     # Store all filepaths with corres. image name versions from processing type
     all_images_dict = {}
     for filepath in data["filepaths"]:
+        all_images_dict[filepath] = {}
         all_images_dict[filepath][img_name_from_filepath(filepath,
                                                          '_original')] \
                                                          = '_original'
         all_images_dict[filepath][img_name_from_filepath(filepath,
                                                          data["processing"])] \
             = data["processing"]
-    print("Created all_images_dict")
 
     # Retrieve images present and not present with processing type
     old_images = {}
     new_images = {}
     for filepath in all_images_dict:
         # Loop through image names from db corresponding to each filepath
+        old_images[filepath] = []
+        new_images[filepath] = []
         for img_name in all_images_dict[filepath]:
             # Check if image is present with processing type
             if is_image_present(data["username"], img_name):
                 # If is present, store in return dict not to process
-                (old_images[filepath]
-                 .append(all_images_dict[filepath][img_name]))
+                old_images[filepath].append(img_name)
             else:
                 # If is not present, store in return dict to process
-                (new_images[filepath]
-                 .append(all_images_dict[filepath][img_name]))
+                new_images[filepath].append(img_name)
 
     # Return dictionary of images present and not present
-    print("Created out_dict")
     out_dict = {"present": old_images,
                 "not present": new_images}
     return jsonify(out_dict)
@@ -297,7 +295,9 @@ def contrast_stretched_upload(username, filepath):
 
     # Process image and encode it.
     start_time = time.time()
-    # CONTRAST STRETCHED IMAGE PROCESSING AND ENCODING OF IMAGE
+    p2, p98 = np.percentile(image, (2, 98))
+    img_rescale = exposure.rescale_intensity(image, in_range=(p2, p98))
+    image_encode = encode_array(img_rescale)
     processing_time = str(time.time() - start_time)
 
     # Create image name
@@ -403,9 +403,8 @@ def inverted_image_upload(username, filepath):
 
 @app.route("/api/upload_images", methods=["POST"])
 def upload_images():
-    print("Made Upload Request")
     # Retrieve data sent to server
-    data = request.json()
+    data = request.get_json()
 
     # Validate Input json
     expected = {"username": (str,),
@@ -418,20 +417,20 @@ def upload_images():
     # Begin uploading images. Handle ZIPs separately?
     new_images = data["images"]
     for filepath in new_images:
-        for processing_type in new_images[filepath]:
-            print("Uploading Image")
-            if processing_type == '_original':
-                original_upload(username, filepath)
-            elif processing_type == '_histogramEqualized':
-                histogram_equalized_upload(username, filepath)
-            elif processing_type == '_contrastStretched':
-                contrast_stretched_upload(username, filepath)
-            elif processing_type == '_logCompressed':
-                log_compressed_upload(username, filepath)
-            elif processing_type == '_invertedImage':
-                inverted_image_upload(username, filepath)
-        else:
-            return jsonfiy("Invalid Computation Type"), 400
+        for image_name in new_images[filepath]:
+            processing_type = image_name.replace(".", "_").split("_")[-2]
+            if processing_type == 'original':
+                original_upload(data["username"], filepath)
+            elif processing_type == 'histogramEqualized':
+                histogram_equalized_upload(data["username"], filepath)
+            elif processing_type == 'contrastStretched':
+                contrast_stretched_upload(data["username"], filepath)
+            elif processing_type == 'logCompressed':
+                log_compressed_upload(data["username"], filepath)
+            elif processing_type == 'invertedImage':
+                inverted_image_upload(data["username"], filepath)
+            else:
+                return jsonify("Invalid Computation Type"), 400
 
     return jsonify("Uploaded all images successfully")
 # -----------------------------Display tab--------------------------------
@@ -441,4 +440,4 @@ def upload_images():
 
 if __name__ == "__main__":
     database_connection()
-    app.run()
+    app.run(host='0.0.0.0')
