@@ -162,6 +162,10 @@ def pixel_histogram(image):
     return hist_dict
 
 
+def is_first_upload(username):
+    return UserData.objects.raw({"_id": username}).exists()
+
+
 def encode_array(array):
     # Encoding of 3darray to save in database
     encoded_array = Binary(pickle.dumps(array, protocol=3))
@@ -381,10 +385,11 @@ def upload_images():
 
     # Check if user already has UserData collection.
     new_images = data["images"]
-    if is_first_image(username):
+    if is_first_upload(username):
+        # Upload first image knowing it is for type original
         first_original_upload(username, list(new_images.keys())[0])
-
-    # If not, need to create one with first file entry being the first of new_images knowing it will be _original.
+        # Remove uploaded first image from new_images
+        new_images = remove_first_original_upload(new_images)
 
     # Begin uploading images. Handle ZIPs separately?
     for filepath in new_images:
