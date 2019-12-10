@@ -244,7 +244,7 @@ def histogram_equalized_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = Binary(pickle.dumps(hist_data, protocol=3))
+    hist_encode = encode_array(hist_data)
 
     # Save image to database
     UserData.objects.raw(
@@ -280,7 +280,7 @@ def contrast_stretched_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = Binary(pickle.dumps(hist_data, protocol=3))
+    hist_encode = encode_array(hist_data)
 
     # Save image to database
     UserData.objects.raw(
@@ -316,7 +316,7 @@ def log_compressed_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = Binary(pickle.dumps(hist_data, protocol=3))
+    hist_encode = encode_array(hist_data)
 
     # Save image to database
     UserData.objects.raw(
@@ -352,7 +352,7 @@ def inverted_image_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = Binary(pickle.dumps(hist_data, protocol=3))
+    hist_encode = encode_array(hist_data)
 
     # Save image to database
     UserData.objects.raw(
