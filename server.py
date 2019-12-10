@@ -213,15 +213,27 @@ def original_upload(username, filepath):
     hist_data = pixel_histogram(image)
     hist_encode = encode_array(hist_data)
 
-    # Save image to database
-    UserData.objects.raw(
-        {"_id": username}).update(
-         {"$push": {"image_name": image_name,
-                    "image": image_encode,
-                    "processing_time": processing_time,
-                    "image_size": image_size,
-                    "hist_data": hist_encode,
-                    "upload_date": upload_date}})
+    # Check if previous images exist
+    if is_first_upload(username):
+        # If first upload, create document
+        user = UserData(username=username,
+                        image_name=image_name,
+                        image=image_encode,
+                        processing_time=processing_time,
+                        image_size=image_size,
+                        hist_data=hist_encode,
+                        upload_date=upload_date)
+        user.save()
+    else:
+        # Save image to database
+        UserData.objects.raw(
+            {"_id": username}).update(
+            {"$push": {"image_name": image_name,
+                       "image": image_encode,
+                       "processing_time": processing_time,
+                       "image_size": image_size,
+                       "hist_data": hist_encode,
+                       "upload_date": upload_date}})
     return
 
 
@@ -383,15 +395,8 @@ def upload_images():
         logging.warning("Attempted upload json is wrong format")
         return jsonify(message), code
 
-    # Check if user already has UserData collection.
-    new_images = data["images"]
-    if is_first_upload(username):
-        # Upload first image knowing it is for type original
-        first_original_upload(username, list(new_images.keys())[0])
-        # Remove uploaded first image from new_images
-        new_images = remove_first_original_upload(new_images)
-
     # Begin uploading images. Handle ZIPs separately?
+    new_images = data["images"]
     for filepath in new_images:
         for processing_type in new_images[filepath]:
             if processing_type == '_original':
