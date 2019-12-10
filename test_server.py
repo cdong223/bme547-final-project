@@ -97,24 +97,26 @@ def test_img_name_from_filepath(filepath, processing, expected):
     assert expected == img_name
 
 
-@pytest.mark.parametrize("stored_username, stored_img_name, username, img_name, expected", [
-    ('...',
-     'Aviary_original.png',
-     '...',
-     'Aviary_original.png',
-     True),
-    ('...',
-     'Aviary_original.png',
-     'unstored_username',
-     'Aviary_original.png',
-     False),
-    ('...',
-     'Aviary_original.png',
-     '...',
-     'Aviary_unstored.png',
-     False),
-])
-def test_is_image_present(stored_username, stored_img_name, username, img_name, expected):
+@pytest.mark.parametrize("stored_username, stored_img_name, username, "
+                         "img_name, expected", [
+                                                ('...',
+                                                 'Aviary_original.png',
+                                                 '...',
+                                                 'Aviary_original.png',
+                                                 True),
+                                                ('...',
+                                                 'Aviary_original.png',
+                                                 'unstored_username',
+                                                 'Aviary_original.png',
+                                                 False),
+                                                ('...',
+                                                 'Aviary_original.png',
+                                                 '...',
+                                                 'Aviary_unstored.png',
+                                                 False),
+                                            ])
+def test_is_image_present(stored_username, stored_img_name, username,
+                          img_name, expected):
     from server import is_image_present
     user = LogIn(username=stored_username)
     user.save()
@@ -128,8 +130,8 @@ def test_is_image_present(stored_username, stored_img_name, username, img_name, 
 
 
 @pytest.mark.parametrize("filepath, expected", [
-    ('C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     '720x960')
+    ('Cat.png',
+     '540x798')
 ])
 def test_get_num_pixels(filepath, expected):
     from server import get_num_pixels
@@ -156,10 +158,12 @@ def test_is_first_upload(stored_username, username, expected):
     user_data.save()
     value = is_first_upload(username)
     assert expected == value
+    UserData.objects.raw({"_id": stored_username}).delete()
+    LogIn.objects.raw({"_id": stored_username}).delete()
 
 
 @pytest.mark.parametrize("array, expected", [
-    (np.array((1, 1, 1)), 13210)
+    (np.array((1, 1, 1)), 13226)
 ])
 def test_encode_array(array, expected):
     from server import encode_array
@@ -205,12 +209,12 @@ def test_histogram_equalization(image, expected):
 @pytest.mark.parametrize("stored_username, username, filepath, expected", [
     ('....',
      '....',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+     'Cat.png',
      '.'),
     ('....',
      '...',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     'Aviary Stock Photo 1_original.png')
+     'Cat.png',
+     'Cat_original.png')
 ])
 def test_original_upload(stored_username, username, filepath, expected):
     from server import original_upload
@@ -240,8 +244,8 @@ def test_original_upload(stored_username, username, filepath, expected):
 
 @pytest.mark.parametrize("username, filepath, expected", [
     ('sm642',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     'Aviary Stock Photo 1_original.png')
+     'Cat.png',
+     'Cat_histogramEqualized.png')
 ])
 def test_histogram_equalized_upload(username, filepath, expected):
     from server import histogram_equalized_upload
@@ -265,64 +269,87 @@ def test_histogram_equalized_upload(username, filepath, expected):
     LogIn.objects.raw({"_id": username}).delete()
 
 
-@pytest.mark.parametrize("username, filepath, expected", [
-    ('sm642',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     'Aviary Stock Photo 1_original.png')
+# @pytest.mark.parametrize("username, filepath, expected", [
+#     ('sm642',
+#      'Cat.png',
+#      'Cat_contrastStretched.png')
+# ])
+# def test_contrast_stretched_upload(username, filepath, expected):
+#     from server import contrast_stretched_upload
+#     user = LogIn(username=username)
+#     user.save()
+#     user_data = UserData(username=user,
+#                          image_name=['.'],
+#                          image=['.'],
+#                          processing_time=['.'],
+#                          image_size=['.'],
+#                          hist_data=['.'],
+#                          upload_date=['.'])
+#     user_data.save()
+#     contrast_stretched_upload(username, filepath)
+#     users = UserData.objects.raw({"_id": username})
+#     stored_name = ''
+#     for user in users:
+#         stored_name = user.image_name
+#     assert expected == stored_name[1]
+#     UserData.objects.raw({"_id": username}).delete()
+#     LogIn.objects.raw({"_id": username}).delete()
+
+
+# @pytest.mark.parametrize("username, filepath, expected", [
+#     ('sm642',
+#      'Cat.png',
+#      'Cat_logCompressed.png')
+# ])
+# def test_log_compressed_upload(username, filepath, expected):
+#     from server import log_compressed_upload
+#     user = LogIn(username=username)
+#     user.save()
+#     user_data = UserData(username=user,
+#                          image_name=['.'],
+#                          image=['.'],
+#                          processing_time=['.'],
+#                          image_size=['.'],
+#                          hist_data=['.'],
+#                          upload_date=['.'])
+#     user_data.save()
+#     log_compressed_upload(username, filepath)
+#     users = UserData.objects.raw({"_id": username})
+#     stored_name = ''
+#     for user in users:
+#         stored_name = user.image_name
+#     assert expected == stored_name[1]
+#     UserData.objects.raw({"_id": username}).delete()
+#     LogIn.objects.raw({"_id": username}).delete()
+
+
+@pytest.mark.parametrize("t1, t2, expected", [
+    (1575993439.3773382, 1575993442.793074, "3.4157357215881348")
 ])
-def test_contrast_stretched_upload(username, filepath, expected):
-    from server import contrast_stretched_upload
-    user = LogIn(username=username)
-    user.save()
-    user_data = UserData(username=user,
-                         image_name=['.'],
-                         image=['.'],
-                         processing_time=['.'],
-                         image_size=['.'],
-                         hist_data=['.'],
-                         upload_date=['.'])
-    user_data.save()
-    contrast_stretched_upload(username, filepath)
-    users = UserData.objects.raw({"_id": username})
-    stored_name = ''
-    for user in users:
-        stored_name = user.image_name
-    assert expected == stored_name[1]
-    UserData.objects.raw({"_id": username}).delete()
-    LogIn.objects.raw({"_id": username}).delete()
+def test_calc_process_time(t1, t2, expected):
+    from server import calc_process_time
+    result = calc_process_time(t1, t2)
+    assert result == expected
 
 
-@pytest.mark.parametrize("username, filepath, expected", [
-    ('sm642',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     'Aviary Stock Photo 1_original.png')
+@pytest.mark.parametrize("image, inv_exp, expected", [
+    (np.array([[[255, 255, 255], [0, 0, 0]]], dtype=np.uint8),
+     np.array([[[0, 0, 0], [255, 255, 25]]], dtype=np.uint8),
+     False),
+    (np.array([[[255, 255, 255], [0, 0, 0]]], dtype=np.uint8),
+     np.array([[[0, 0, 0], [255, 255, 255]]], dtype=np.uint8),
+     True),
 ])
-def test_log_compressed_upload(username, filepath, expected):
-    from server import log_compressed_upload
-    user = LogIn(username=username)
-    user.save()
-    user_data = UserData(username=user,
-                         image_name=['.'],
-                         image=['.'],
-                         processing_time=['.'],
-                         image_size=['.'],
-                         hist_data=['.'],
-                         upload_date=['.'])
-    user_data.save()
-    log_compressed_upload(username, filepath)
-    users = UserData.objects.raw({"_id": username})
-    stored_name = ''
-    for user in users:
-        stored_name = user.image_name
-    assert expected == stored_name[1]
-    UserData.objects.raw({"_id": username}).delete()
-    LogIn.objects.raw({"_id": username}).delete()
+def test_invert(image, inv_exp, expected):
+    from server import invert
+    inv_img = invert(image)
+    assert np.array_equal(inv_img, inv_exp) == expected
 
 
 @pytest.mark.parametrize("username, filepath, expected", [
-    ('sm642',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     'Aviary Stock Photo 1_original.png')
+    ('unit_test_inv_img_upload',
+     'Cat.png',
+     'Cat_invertedImage.png')
 ])
 def test_inverted_image_upload(username, filepath, expected):
     from server import inverted_image_upload
@@ -348,8 +375,8 @@ def test_inverted_image_upload(username, filepath, expected):
 
 if __name__ == "__main__":
     test_database_connection()
-    test_original_upload('....',
-     '....',
-     'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-     '.')
+    # test_original_upload('....',
+    #  '....',
+    #  'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
+    #  '.')
     print("test_server.py Main")

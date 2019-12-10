@@ -4,7 +4,7 @@ from pymodm import connect, MongoModel, fields
 from LogIn import LogIn
 from UserData import UserData
 from UserMetrics import UserMetrics
-from skimage import exposure, io, color
+from skimage import util, exposure, io, color
 from bson.binary import Binary
 import pickle
 import skimage
@@ -81,7 +81,6 @@ def get_db_img_name(img_name, processing):
 
 
 def img_name_from_filepath(filepath, processing):
-    # COULD BE MORE MODULAR IF ACCEPT SINGLE FILE PATH AND PROCESSING TYPE AND RETURNS NAME
     head, tail = isolate_image_name_from_path(filepath)
     img_name = get_db_img_name(tail, processing)  # Append original image name
     return img_name
@@ -120,12 +119,16 @@ def validate_images():
 
     # Unload ZIP files and add to filepaths?
 
-    # Store all filepaths with corresponding image name versions from processing type
+    # Store all filepaths with corres. image name versions from processing type
     all_images_dict = {}
     for filepath in data["filepaths"]:
         all_images_dict[filepath] = {}
-        all_images_dict[filepath][img_name_from_filepath(filepath, '_original')] = '_original'
-        all_images_dict[filepath][img_name_from_filepath(filepath, data["processing"])] = data["processing"]
+        all_images_dict[filepath][img_name_from_filepath(filepath,
+                                                         '_original')] \
+                                                         = '_original'
+        all_images_dict[filepath][img_name_from_filepath(filepath,
+                                                         data["processing"])] \
+            = data["processing"]
 
     # Retrieve images present and not present with processing type
     old_images = {}
@@ -181,6 +184,10 @@ def decode_array(array):
     return decoded_array
 
 
+def calc_process_time(t1, t2):
+    return str(t2 - t1)
+
+
 def histogram_equalization(image):
     r = image[:, :, 0]
     g = image[:, :, 1]
@@ -190,6 +197,11 @@ def histogram_equalization(image):
     b_hist = skimage.exposure.histogram(b)
     hist_image = np.dstack((r_hist, g_hist, b_hist))
     return hist_image
+
+
+def invert(image):
+    inv_image = util.invert(image)
+    return inv_image
 
 
 def original_upload(username, filepath):
@@ -251,7 +263,7 @@ def histogram_equalized_upload(username, filepath):
     processing_time = str(time.time() - start_time)
 
     # Create image name
-    image_name = img_name_from_filepath(filepath, "_original")
+    image_name = img_name_from_filepath(filepath, "_histogramEqualized")
 
     # Calc image size
     image_size = get_num_pixels(image)
@@ -321,11 +333,11 @@ def log_compressed_upload(username, filepath):
 
     # Process image and encode it.
     start_time = time.time()
-    #LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
+    # LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
     processing_time = str(time.time() - start_time)
 
     # Create image name
-    image_name = img_name_from_filepath(filepath, "_original")
+    image_name = img_name_from_filepath(filepath, "_logCompressed")
 
     # Calc image size
     image_size = get_num_pixels(image)
@@ -357,32 +369,34 @@ def inverted_image_upload(username, filepath):
 
     # Process image and encode it.
     start_time = time.time()
-    #INVERTED IMAGE PROCESSING AND ENCODING OF IMAGE
-    processing_time = str(time.time() - start_time)
+    inv_image = invert(image)
+    inv_encoded = encode_array(inv_image)
+    end_time = time.time()
+    processing_time = calc_process_time(start_time, end_time)
 
     # Create image name
-    image_name = img_name_from_filepath(filepath, "_original")
+    inv_name = img_name_from_filepath(filepath, "_invertedImage")
 
     # Calc image size
-    image_size = get_num_pixels(image)
-
-    # Get date and time
-    upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
+    inv_size = get_num_pixels(inv_image)
 
     # Calc histogram data. Produces {"red": ndarray, "green....}
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
-    hist_data = pixel_histogram(image)
-    hist_encode = encode_array(hist_data)
+    inv_hist = pixel_histogram(inv_image)
+    hist_encoded = encode_array(inv_hist)
+
+    # Get date and time
+    upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
 
     # Save image to database
     UserData.objects.raw(
         {"_id": username}).update(
-        {"$push": {"image_name": image_name,
-                   "image": image_encode,
+        {"$push": {"image_name": inv_name,
+                   "image": inv_encoded,
                    "processing_time": processing_time,
-                   "image_size": image_size,
-                   "hist_data": hist_encode,
+                   "image_size": inv_size,
+                   "hist_data": hist_encoded,
                    "upload_date": upload_date}})
     return
 
