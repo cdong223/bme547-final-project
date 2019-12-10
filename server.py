@@ -81,7 +81,6 @@ def get_db_img_name(img_name, processing):
 
 
 def img_name_from_filepath(filepath, processing):
-    # COULD BE MORE MODULAR IF ACCEPT SINGLE FILE PATH AND PROCESSING TYPE AND RETURNS NAME
     head, tail = isolate_image_name_from_path(filepath)
     img_name = get_db_img_name(tail, processing)  # Append original image name
     return img_name
@@ -121,11 +120,15 @@ def validate_images():
 
     # Unload ZIP files and add to filepaths?
 
-    # Store all filepaths with corresponding image name versions from processing type
+    # Store all filepaths with corres. image name versions from processing type
     all_images_dict = {}
     for filepath in data["filepaths"]:
-        all_images_dict[filepath][img_name_from_filepath(filepath, '_original')] = '_original'
-        all_images_dict[filepath][img_name_from_filepath(filepath, data["processing"])] = data["processing"]
+        all_images_dict[filepath][img_name_from_filepath(filepath,
+                                                         '_original')] \
+                                                         = '_original'
+        all_images_dict[filepath][img_name_from_filepath(filepath,
+                                                         data["processing"])] \
+            = data["processing"]
     print("Created all_images_dict")
 
     # Retrieve images present and not present with processing type
@@ -137,10 +140,12 @@ def validate_images():
             # Check if image is present with processing type
             if is_image_present(data["username"], img_name):
                 # If is present, store in return dict not to process
-                old_images[filepath].append(all_images_dict[filepath][img_name])
+                (old_images[filepath]
+                 .append(all_images_dict[filepath][img_name]))
             else:
                 # If is not present, store in return dict to process
-                new_images[filepath].append(all_images_dict[filepath][img_name])
+                (new_images[filepath]
+                 .append(all_images_dict[filepath][img_name]))
 
     # Return dictionary of images present and not present
     print("Created out_dict")
@@ -292,7 +297,7 @@ def contrast_stretched_upload(username, filepath):
 
     # Process image and encode it.
     start_time = time.time()
-    #CONTRAST STRETCHED IMAGE PROCESSING AND ENCODING OF IMAGE
+    # CONTRAST STRETCHED IMAGE PROCESSING AND ENCODING OF IMAGE
     processing_time = str(time.time() - start_time)
 
     # Create image name
@@ -328,7 +333,7 @@ def log_compressed_upload(username, filepath):
 
     # Process image and encode it.
     start_time = time.time()
-    #LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
+    # LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
     processing_time = str(time.time() - start_time)
 
     # Create image name
