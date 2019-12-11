@@ -13,12 +13,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import logging
 import os
+import base64
+import io
 import time
 
 app = Flask(__name__)
 
 
 def database_connection():
+    """Connect to database and configure logging
+
+    Returns:
+        None
+    """
     connect("mongodb+srv://dervil_dong_moavenzadeh_qi"
             ":BME54701@cluster0-dykvj.mongodb.net"
             "/test?retryWrites=true&w=majority")
@@ -29,6 +36,14 @@ def database_connection():
 
 # ----------------------------Login Screen--------------------------------
 def patient_exists(username):
+    """Checks to see if given username already exists in the database
+
+    Args:
+        username (str): username to check in database
+
+    Returns:
+        bool: True if username already registered. False otherwise.
+    """
     user = LogIn.objects.raw({"_id": username})
     if user.count() == 0:
         return False
@@ -36,6 +51,14 @@ def patient_exists(username):
 
 
 def register_user(username):
+    """Registers new username in database
+
+    Args:
+        username (str): username to register in database
+
+    Returns:
+        None
+    """
     user = LogIn(username=username).save()
     metrics = UserMetrics(username=username,
                           total_uploads=0,
@@ -48,6 +71,15 @@ def register_user(username):
 
 @app.route("/api/login", methods=["POST"])
 def login_patient():
+    """POST request to login into database
+
+    Args:
+        None
+
+    Returns:
+        JSON: Str indicating login successful or bad request if username
+              does not exists.
+    """
     username = request.get_json()
     if patient_exists(username) is False:
         return jsonify("Bad Login Request"), 400
@@ -56,6 +88,15 @@ def login_patient():
 
 @app.route("/api/new_user", methods=["POST"])
 def add_new_user():
+    """POST request to register new username in database
+
+    Args:
+        None
+
+    Returns:
+        JSON: Str indicating registration successful or bad request if username
+              already exists in database.
+    """
     username = request.get_json()
     if patient_exists(username) is True:
         return jsonify("Bad New User Request"), 400
@@ -65,6 +106,17 @@ def add_new_user():
 
 # -----------------------------Upload tab---------------------------------
 def validate_input_json(data, expected):
+    """Validates json recieved from request
+
+    Args:
+        data (): json recieved from request
+        expected (dict): json format expected from request
+
+    Returns:
+        bool: state of validity, True if good request
+        str: reason for validity
+        int: request status code
+    """
     # Validates input json is as expected
     # Initialize response assuming all correct
     valid = True
@@ -105,23 +157,58 @@ def validate_input_json(data, expected):
 
 
 def isolate_image_name_from_path(filepath):
+    """Isolates image file name from path
+
+    Args:
+        filepath (str): location of image
+
+    Returns:
+        str: head filepath and image name
+    """
     # Returns image name from file path
     head, tail = os.path.split(filepath)
     return head, tail
 
 
 def get_db_img_name(img_name, processing):
+    """Creates image name given processing type
+
+    Args:
+        img_name (str): image name
+        processing (str): processing applied
+
+    Returns:
+        str: Created image name
+    """
     img_name, filetype = img_name.split('.')
     return img_name + processing + "." + filetype
 
 
 def img_name_from_filepath(filepath, processing):
+    """Creates image name from filepath
+
+    Args:
+        filepath (str): location of image
+        processing (str): Processing type to apply
+
+    Returns:
+        str: image name for storage
+    """
     head, tail = isolate_image_name_from_path(filepath)
     img_name = get_db_img_name(tail, processing)  # Append original image name
     return img_name
 
 
 def is_image_present(username, img_name):
+    """Checks if image is present for user
+
+    Args:
+        username (str): user checking image for
+        img_name (str): name of image to check
+
+    Returns:
+        bool: presence of image. True if present
+    """
     # Check if image is present
     users = UserData.objects.raw({"_id": username})
     count = 0
@@ -140,6 +227,12 @@ def is_image_present(username, img_name):
 
 @app.route("/api/validate_images", methods=["POST"])
 def validate_images():
+    """POST request to check which images are present for user
+
+    Returns:
+        dict: Dictionary of images present and images not
+        present for user
+    """
     # Retrieve data sent to server
     data = request.get_json()  # Returns native dictionary
 
@@ -188,12 +281,28 @@ def validate_images():
 
 
 def get_num_pixels(image):
+    """Retrieve image size from image
+
+    Args:
+        image (ndarray): image to retrieve size
+
+    Returns:
+        str: image size as COLxROWxDEP
+    """
     shape = image.shape
     image_size = str(shape[1])+"x"+str(shape[0])+"x"+str(shape[2])
     return image_size
 
 
 def pixel_histogram(image):
+    """Creates histogram of pixel intensities
+
+    Args:
+        image (ndarray): image file
+
+    Returns:
+        dict: Dictionary of color component pixel histograms
+    """
     red_hist = skimage.exposure.histogram(image[:, :, 0])
     green_hist = skimage.exposure.histogram(image[:, :, 1])
     blue_hist = skimage.exposure.histogram(image[:, :, 2])
@@ -204,26 +313,95 @@ def pixel_histogram(image):
 
 
 def is_first_upload(username):
+    """Checks if user has any images stored in DB
+
+    Args:
+        username (str): user
+
+    Returns:
+        bool: state of user images. True if no image
+        present for user
+    """
     return not UserData.objects.raw({"_id": username}).count()
 
 
 def encode_array(array):
+    """Encodes array to byte64
+
+    Args:
+        array (ndarray): array
+
+    Returns:
+        byte64: encoded array
+    """
     # Encoding of 3darray to save in database
-    encoded_array = Binary(pickle.dumps(array, protocol=3))
+    encoded_array = base64.b64encode(array)
     return encoded_array
 
 
 def decode_array(array):
+    """Decodes byte64 array
+
+    Args:
+        array (byte64): stored file to decode
+
+    Returns:
+        ndarray: decoded array
+    """
     # Decoding of 3darray to use for processing
-    decoded_array = pickle.loads(array)
+    decoded_array = np.frombuffer(base64.b64decode(array), np.uint8)
     return decoded_array
 
 
+def encode_dict(dictionary):
+    """Encodes dictinary to binary
+
+    Args:
+        dictionary (dict): dictionary to encode
+
+    Returns:
+        binary: encoded dictionary
+    """
+    encoded_dict = Binary(pickle.dumps(dictionary, protocol=3))
+    return encoded_dict
+
+
+def decode_dict(dictionary):
+    """Decodes binary dictionary to native dictionary
+
+    Args:
+        dictionary (binary): storage to decode
+
+    Returns:
+        dict: decoded dictionary
+    """
+    decoded_dict = pickle.loads(dictionary)
+    return decoded_dict
+
+
 def calc_process_time(t1, t2):
+    """Calculates difference between times
+
+    Args:
+        t1 (float): initial time
+        t2 (float): end time
+
+    Returns:
+        str: difference in times
+    """
     return str(t2 - t1)
 
 
 def histogram_equalization(image):
+    """Equalized each color array individual and
+        returns equalized image
+
+    Args:
+        image (ndarray): image to equalize
+
+    Returns:
+        ndarray: equalized image
+    """
     r = image[:, :, 0]
     g = image[:, :, 1]
     b = image[:, :, 2]
@@ -236,20 +414,46 @@ def histogram_equalization(image):
 
 
 def invert(image):
+    """Inverts image pixel intensities
+
+    Args:
+        image (ndarray): image to invert
+
+    Returns:
+        ndarray: Inverted image
+    """
     inv_image = util.invert(image)
     return inv_image
 
 
 def log_compression(img):
+    """Logarithmic scaling of image
+
+    Args:
+        img (ndarray): image to scale
+
+    Returns:
+        ndarray: scaled image
+    """
     # LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
     # Apply log transform
-    img_log = (np.log(img + 1) / (np.log(1 + np.max(img)))) * 255
-    # Specify the data type
-    img_log = np.array(img_log, dtype=np.uint8)
+    img_log = skimage.exposure.adjust_log(img)
     return img_log
 
 
 def original_upload(username, filepath):
+    """Performs encoding and uploads to database along with associated data
+       metrics (upload time, processing time, histogram, size). Checks to see
+       if username is already associated with a UserData document and uploads
+       accordingly.
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -271,7 +475,7 @@ def original_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = encode_array(hist_data)
+    hist_encode = encode_dict(hist_data)
 
     # Check if previous images exist
     if is_first_upload(username):
@@ -298,6 +502,17 @@ def original_upload(username, filepath):
 
 
 def histogram_equalized_upload(username, filepath):
+    """Performs histogram equalization/encoding and uploads to database along
+       with associated data metrics (upload time, processing time, histogram,
+       size).
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -320,7 +535,7 @@ def histogram_equalized_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = encode_array(hist_data)
+    hist_encode = encode_dict(hist_data)
 
     # Save image to database
     UserData.objects.raw(
@@ -335,6 +550,17 @@ def histogram_equalized_upload(username, filepath):
 
 
 def contrast_stretched_upload(username, filepath):
+    """Performs contrast stretching/encoding and uploads to database along
+       with associated data metrics (upload time, processing time, histogram,
+       size).
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -358,7 +584,7 @@ def contrast_stretched_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = encode_array(hist_data)
+    hist_encode = encode_dict(hist_data)
 
     # Save image to database
     UserData.objects.raw(
@@ -373,6 +599,17 @@ def contrast_stretched_upload(username, filepath):
 
 
 def log_compressed_upload(username, filepath):
+    """Performs log compression/encoding and uploads to database along
+       with associated data metrics (upload time, processing time, histogram,
+       size).
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -395,7 +632,7 @@ def log_compressed_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = encode_array(hist_data)
+    hist_encode = encode_dict(hist_data)
 
     # Save image to database
     UserData.objects.raw(
@@ -410,6 +647,17 @@ def log_compressed_upload(username, filepath):
 
 
 def inverted_image_upload(username, filepath):
+    """Performs image inversion/encoding and uploads to database along with
+       associated data metrics (upload time, processing time, histogram,
+       size).
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -430,7 +678,7 @@ def inverted_image_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     inv_hist = pixel_histogram(inv_image)
-    hist_encoded = encode_array(inv_hist)
+    hist_encoded = encode_dict(inv_hist)
 
     # Get date and time
     upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
@@ -449,6 +697,17 @@ def inverted_image_upload(username, filepath):
 
 @app.route("/api/upload_images", methods=["POST"])
 def upload_images():
+    """POST request to process and upload images to the database. Receives
+       the username associated with the request, the list of images to be
+       processed, and the processing type. Calls the appropriate processing
+       pathways.
+
+    Args:
+        None
+
+    Returns:
+        JSON: Str indicating successful upload.
+    """
     # Retrieve data sent to server
     data = request.get_json()
 
@@ -485,22 +744,38 @@ def upload_images():
 
 # ----------------------------User Metrics tab----------------------------
 def get_metrics(username):
-        user_entry = UserMetrics.objects.raw({"_id": username})
-        user = user_entry[0]
-        metrics = {
-                   "total_uploads": user.total_uploads,
-                   "total_hist_equal": user.total_hist_equal,
-                   "total_contrast_stretch": user.total_contrast_stretch,
-                   "total_log_comp": user.total_log_comp,
-                   "total_inv_img": user.total_inv_img
-                   }
-        return metrics
+    """Connects to database to retrive user_metrics data for given username
+
+    Args:
+        username (str): username to check in database
+
+    Returns:
+        dict: user metrics as integers
+    """
+    user_entry = UserMetrics.objects.raw({"_id": username})
+    user = user_entry[0]
+    metrics = {
+               "total_uploads": user.total_uploads,
+               "total_hist_equal": user.total_hist_equal,
+               "total_contrast_stretch": user.total_contrast_stretch,
+               "total_log_comp": user.total_log_comp,
+               "total_inv_img": user.total_inv_img
+               }
+    return metrics
 
 
 @app.route("/api/user_metrics/<username>", methods=["GET"])
 def get_user_metrics(username):
+    """GET request to retrieve user_metrics data for given username
+
+    Args:
+        username (str): username to check in database
+
+    Returns:
+        JSON: dictionary containing user metrics as integers
+    """
     metrics = get_metrics(username)
-    return metrics
+    return jsonify(metrics)
 
 
 if __name__ == "__main__":
