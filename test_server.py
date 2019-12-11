@@ -8,6 +8,7 @@ from LogIn import LogIn
 from UserMetrics import UserMetrics
 from pymodm import connect, MongoModel, fields
 import dns
+import base64
 
 
 def test_database_connection():
@@ -166,15 +167,17 @@ def test_is_first_upload(stored_username, username, expected):
 
 
 @pytest.mark.parametrize("array, expected", [
-    (np.array((1, 1, 1)), 2101)
+    (np.array((1, 1, 1)), "AQAAAAAAAAABAAAAAAAAAAEAAAAAAAAA")
 ])
 def test_encode_array(array, expected):
     from server import encode_array
     encoded_array = encode_array(array)
-    pixel_list = []
-    for pixel in encoded_array:
-        pixel_list.append(pixel)
-    assert expected == sum(pixel_list)
+    b64_str = str(encoded_array, encoding='utf-8')
+    assert b64_str == expected
+    # pixel_list = []
+    # for pixel in encoded_array:
+    #     pixel_list.append(pixel)
+    # assert expected == sum(pixel_list)
 
 
 @pytest.mark.parametrize("array, expected", [
