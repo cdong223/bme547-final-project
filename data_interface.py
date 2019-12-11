@@ -183,8 +183,6 @@ def data_interface_window(username='NA'):
         # uploading.
         # If Continue button, move forward and delete display/reset file
         # selection/disable upload. If not, simply return.
-        print(new_images)
-        print(present_images)
         flag = False
         for values in present_images.values():
             if len(values) > 0:
