@@ -205,6 +205,15 @@ def invert(image):
     return inv_image
 
 
+def log_compression(img):
+    # LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
+    # Apply log transform
+    img_log = (np.log(img + 1) / (np.log(1 + np.max(img)))) * 255
+    # Specify the data type
+    img_log = np.array(img_log, dtype=np.uint8)
+    return img_log
+
+
 def original_upload(username, filepath):
     # Read original image from filepath
     image = skimage.io.imread(filepath)
@@ -334,7 +343,8 @@ def log_compressed_upload(username, filepath):
 
     # Process image and encode it.
     start_time = time.time()
-    # LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
+    image = log_compression(image)
+    image_encode = encode_array(image)
     processing_time = str(time.time() - start_time)
 
     # Create image name
