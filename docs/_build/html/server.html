@@ -1,0 +1,833 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>server module &#8212; final_project v1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-server">
+<span id="server-module"></span><h1>server module<a class="headerlink" href="#module-server" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="server.add_new_user">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">add_new_user</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.add_new_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>POST request to register new username in database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Str indicating registration successful or bad request if username</dt><dd><p>already exists in database.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.calc_process_time">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">calc_process_time</code><span class="sig-paren">(</span><em class="sig-param">t1</em>, <em class="sig-param">t2</em><span class="sig-paren">)</span><a class="headerlink" href="#server.calc_process_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates difference between times</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t1</strong> (<em>float</em>) – initial time</p></li>
+<li><p><strong>t2</strong> (<em>float</em>) – end time</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>difference in times</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.contrast_stretched_upload">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">contrast_stretched_upload</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#server.contrast_stretched_upload" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs contrast stretching/encoding and uploads to database along</dt><dd><p>with associated data metrics (upload time, processing time, histogram,
+size).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – username to upload to in database</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – filepath of image to be processed and encoded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.database_connection">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">database_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.database_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to database and configure logging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.decode_array">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">decode_array</code><span class="sig-paren">(</span><em class="sig-param">array</em><span class="sig-paren">)</span><a class="headerlink" href="#server.decode_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes byte64 array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>array</strong> (<em>byte64</em>) – stored file to decode</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>decoded array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.decode_dict">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">decode_dict</code><span class="sig-paren">(</span><em class="sig-param">dictionary</em><span class="sig-paren">)</span><a class="headerlink" href="#server.decode_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes binary dictionary to native dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dictionary</strong> (<em>binary</em>) – storage to decode</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>decoded dictionary</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.encode_array">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">encode_array</code><span class="sig-paren">(</span><em class="sig-param">array</em><span class="sig-paren">)</span><a class="headerlink" href="#server.encode_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes array to byte64</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>array</strong> (<em>ndarray</em>) – array</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>encoded array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>byte64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.encode_dict">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">encode_dict</code><span class="sig-paren">(</span><em class="sig-param">dictionary</em><span class="sig-paren">)</span><a class="headerlink" href="#server.encode_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes dictinary to binary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dictionary</strong> (<em>dict</em>) – dictionary to encode</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>encoded dictionary</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>binary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.fetch_image">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">fetch_image</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#server.fetch_image" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>GET request. Given the user id and the image name, return the image</dt><dd><p>file.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – user id in the database</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the file to find image file of</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>contains metrics info in list
+Status code: indicate whether request is successful</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.find_file">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">find_file</code><span class="sig-paren">(</span><em class="sig-param">image_list</em>, <em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#server.find_file" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Given the list of image, the list of image files and the name of the</dt><dd><p>image, return the image file in the corresponding location</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_list</strong> (<em>list</em>) – a list of list. First item is list of image names.</p></li>
+<li><p><strong>item is list of image files.</strong> (<em>Second</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the image file encoded in base64</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.find_histo">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">find_histo</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#server.find_histo" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Given the user id and the image name, return the histogram value in a</dt><dd><p>np array</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – user id in the database</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the file to find histogram of</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>contains histogram data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.find_metrics">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">find_metrics</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#server.find_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Given the user id and the image name, return the image metrics value</dt><dd><p>in a list</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – user id in the database</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the file to find metrics of</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>contains image metrics data (CPU time, size of image, and upload
+timestamp)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_all_images">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">get_all_images</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_all_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the user id, return the list of images the user uploaded</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – user id in the database</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of image names and the image files</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_db_img_name">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">get_db_img_name</code><span class="sig-paren">(</span><em class="sig-param">img_name</em>, <em class="sig-param">processing</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_db_img_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates image name given processing type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img_name</strong> (<em>str</em>) – image name</p></li>
+<li><p><strong>processing</strong> (<em>str</em>) – processing applied</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Created image name</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_image_metrics">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">get_image_metrics</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_image_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>GET request. Given the user id and the image name, return the image</dt><dd><p>metrics</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – user id in the database</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the file to find metrics of</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>contains metrics data in list
+Status code: indicate whether request is successful</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_metrics">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">get_metrics</code><span class="sig-paren">(</span><em class="sig-param">username</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connects to database to retrive user_metrics data for given username</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> (<em>str</em>) – username to check in database</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>user metrics as integers</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_num_pixels">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">get_num_pixels</code><span class="sig-paren">(</span><em class="sig-param">image</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_num_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve image size from image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image</strong> (<em>ndarray</em>) – image to retrieve size</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>image size as COLxROWxDEP</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_user_metrics">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">get_user_metrics</code><span class="sig-paren">(</span><em class="sig-param">username</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_user_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>GET request to retrieve user_metrics data for given username</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> (<em>str</em>) – username to check in database</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary containing user metrics as integers</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.histo">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">histo</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#server.histo" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>GET request. Given the user id and the image name, return the histogram</dt><dd><p>data in list</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – user id in the database</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the file to find histogram of</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>contains histogram data in list of list
+Status code: indicate whether request is successful</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.histogram_equalization">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">histogram_equalization</code><span class="sig-paren">(</span><em class="sig-param">image</em><span class="sig-paren">)</span><a class="headerlink" href="#server.histogram_equalization" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Equalized each color array individual and</dt><dd><p>returns equalized image</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image</strong> (<em>ndarray</em>) – image to equalize</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>equalized image</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.histogram_equalized_upload">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">histogram_equalized_upload</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#server.histogram_equalized_upload" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs histogram equalization/encoding and uploads to database along</dt><dd><p>with associated data metrics (upload time, processing time, histogram,
+size).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – username to upload to in database</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – filepath of image to be processed and encoded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.image_list">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">image_list</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#server.image_list" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>GET request. Given the user id, return the list of image stored for</dt><dd><p>the user.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – user id in the database</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>contains image name in list</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.img_name_from_filepath">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">img_name_from_filepath</code><span class="sig-paren">(</span><em class="sig-param">filepath</em>, <em class="sig-param">processing</em><span class="sig-paren">)</span><a class="headerlink" href="#server.img_name_from_filepath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates image name from filepath</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – location of image</p></li>
+<li><p><strong>processing</strong> (<em>str</em>) – Processing type to apply</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>image name for storage</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.invert">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">invert</code><span class="sig-paren">(</span><em class="sig-param">image</em><span class="sig-paren">)</span><a class="headerlink" href="#server.invert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverts image pixel intensities</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image</strong> (<em>ndarray</em>) – image to invert</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Inverted image</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.inverted_image_upload">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">inverted_image_upload</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#server.inverted_image_upload" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs image inversion/encoding and uploads to database along with</dt><dd><p>associated data metrics (upload time, processing time, histogram,
+size).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – username to upload to in database</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – filepath of image to be processed and encoded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.is_first_upload">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">is_first_upload</code><span class="sig-paren">(</span><em class="sig-param">username</em><span class="sig-paren">)</span><a class="headerlink" href="#server.is_first_upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if user has any images stored in DB</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> (<em>str</em>) – user</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>state of user images. True if no image
+present for user</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.is_image_present">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">is_image_present</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">img_name</em><span class="sig-paren">)</span><a class="headerlink" href="#server.is_image_present" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if image is present for user</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – user checking image for</p></li>
+<li><p><strong>img_name</strong> (<em>str</em>) – name of image to check</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>presence of image. True if present</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.isolate_image_name_from_path">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">isolate_image_name_from_path</code><span class="sig-paren">(</span><em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#server.isolate_image_name_from_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Isolates image file name from path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – location of image</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>head filepath and image name</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.log_compressed_upload">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">log_compressed_upload</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#server.log_compressed_upload" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs log compression/encoding and uploads to database along</dt><dd><p>with associated data metrics (upload time, processing time, histogram,
+size).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – username to upload to in database</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – filepath of image to be processed and encoded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.log_compression">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">log_compression</code><span class="sig-paren">(</span><em class="sig-param">img</em><span class="sig-paren">)</span><a class="headerlink" href="#server.log_compression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logarithmic scaling of image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>img</strong> (<em>ndarray</em>) – image to scale</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>scaled image</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.login_patient">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">login_patient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.login_patient" title="Permalink to this definition">¶</a></dt>
+<dd><p>POST request to login into database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Str indicating login successful or bad request if username</dt><dd><p>does not exists.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.original_upload">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">original_upload</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#server.original_upload" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs encoding and uploads to database along with associated data</dt><dd><p>metrics (upload time, processing time, histogram, size). Checks to see
+if username is already associated with a UserData document and uploads
+accordingly.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – username to upload to in database</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – filepath of image to be processed and encoded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.patient_exists">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">patient_exists</code><span class="sig-paren">(</span><em class="sig-param">username</em><span class="sig-paren">)</span><a class="headerlink" href="#server.patient_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks to see if given username already exists in the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> (<em>str</em>) – username to check in database</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if username already registered. False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.pixel_histogram">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">pixel_histogram</code><span class="sig-paren">(</span><em class="sig-param">image</em><span class="sig-paren">)</span><a class="headerlink" href="#server.pixel_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates histogram of pixel intensities</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image</strong> (<em>ndarray</em>) – image file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary of color component pixel histograms</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.register_user">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">register_user</code><span class="sig-paren">(</span><em class="sig-param">username</em><span class="sig-paren">)</span><a class="headerlink" href="#server.register_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers new username in database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> (<em>str</em>) – username to register in database</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.upload_images">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">upload_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.upload_images" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>POST request to process and upload images to the database. Receives</dt><dd><p>the username associated with the request, the list of images to be
+processed, and the processing type. Calls the appropriate processing
+pathways.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Str indicating successful upload.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.validate_images">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">validate_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.validate_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>POST request to check which images are present for user</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary of images present and images not
+present for user</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.validate_input_json">
+<code class="sig-prename descclassname">server.</code><code class="sig-name descname">validate_input_json</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">expected</em><span class="sig-paren">)</span><a class="headerlink" href="#server.validate_input_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates json recieved from request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>)</strong> (<em>data</em>) – json recieved from request</p></li>
+<li><p><strong>expected</strong> (<em>dict</em>) – json format expected from request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>state of validity, True if good request
+str: reason for validity
+int: request status code</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">final_project</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Claire Dong, Vivian Qi, Spencer Moavenzadeh, Therking Dervil.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/server.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
