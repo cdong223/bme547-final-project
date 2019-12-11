@@ -349,7 +349,7 @@ def decode_array(array):
         ndarray: decoded array
     """
     # Decoding of 3darray to use for processing
-    decoded_array = np.frombuffer(base64.b64dencode(array), np.uint8)
+    decoded_array = np.frombuffer(base64.b64decode(array), np.uint8)
     return decoded_array
 
 
