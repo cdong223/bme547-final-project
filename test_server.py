@@ -439,8 +439,6 @@ def test_register_user(username, expected):
     LogIn.objects.raw({"_id": username}).delete()
     UserMetrics.objects.raw({"_id": username}).delete()
 
-    
-
 
 @pytest.mark.parametrize("input, expected1, expected2",
                          [('1', ["a.png", "b.png"], ["imageA", "imageB"]),
