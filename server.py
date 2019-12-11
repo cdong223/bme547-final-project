@@ -154,7 +154,7 @@ def validate_images():
 
 def get_num_pixels(image):
     shape = image.shape
-    image_size = str(shape[1])+"x"+str(shape[0])
+    image_size = str(shape[1])+"x"+str(shape[0])+"x"+str(shape[2])
     return image_size
 
 
