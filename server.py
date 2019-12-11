@@ -21,6 +21,11 @@ app = Flask(__name__)
 
 
 def database_connection():
+    """Connect to database and configure logging
+
+    Returns:
+        None
+    """
     connect("mongodb+srv://dervil_dong_moavenzadeh_qi"
             ":BME54701@cluster0-dykvj.mongodb.net"
             "/test?retryWrites=true&w=majority")
@@ -67,6 +72,17 @@ def add_new_user():
 
 # -----------------------------Upload tab---------------------------------
 def validate_input_json(data, expected):
+    """Validates json recieved from request
+
+    Args:
+        data (): json recieved from request
+        expected (dict): json format expected from request
+
+    Returns:
+        bool: state of validity, True if good request
+        str: reason for validity
+        int: request status code
+    """
     # Validates input json is as expected
     # Initialize response assuming all correct
     valid = True
@@ -107,23 +123,58 @@ def validate_input_json(data, expected):
 
 
 def isolate_image_name_from_path(filepath):
+    """Isolates image file name from path
+
+    Args:
+        filepath (str): location of image
+
+    Returns:
+        str: head filepath and image name
+    """
     # Returns image name from file path
     head, tail = os.path.split(filepath)
     return head, tail
 
 
 def get_db_img_name(img_name, processing):
+    """Creates image name given processing type
+
+    Args:
+        img_name (str): image name
+        processing (str): processing applied
+
+    Returns:
+        str: Created image name
+    """
     img_name, filetype = img_name.split('.')
     return img_name + processing + "." + filetype
 
 
 def img_name_from_filepath(filepath, processing):
+    """Creates image name from filepath
+
+    Args:
+        filepath (str): location of image
+        processing (str): Processing type to apply
+
+    Returns:
+        str: image name for storage
+    """
     head, tail = isolate_image_name_from_path(filepath)
     img_name = get_db_img_name(tail, processing)  # Append original image name
     return img_name
 
 
 def is_image_present(username, img_name):
+    """Checks if image is present for user
+
+    Args:
+        username (str): user checking image for
+        img_name (str): name of image to check
+
+    Returns:
+        bool: presence of image. True if present
+    """
     # Check if image is present
     users = UserData.objects.raw({"_id": username})
     count = 0
@@ -142,6 +193,12 @@ def is_image_present(username, img_name):
 
 @app.route("/api/validate_images", methods=["POST"])
 def validate_images():
+    """POST request to check which images are present for user
+
+    Returns:
+        dict: Dictionary of images present and images not
+        present for user
+    """
     # Retrieve data sent to server
     data = request.get_json()  # Returns native dictionary
 
@@ -190,12 +247,28 @@ def validate_images():
 
 
 def get_num_pixels(image):
+    """Retrieve image size from image
+
+    Args:
+        image (ndarray): image to retrieve size
+
+    Returns:
+        str: image size as COLxROWxDEP
+    """
     shape = image.shape
     image_size = str(shape[1])+"x"+str(shape[0])+"x"+str(shape[2])
     return image_size
 
 
 def pixel_histogram(image):
+    """Creates histogram of pixel intensities
+
+    Args:
+        image (ndarray): image file
+
+    Returns:
+        dict: Dictionary of color component pixel histograms
+    """
     red_hist = skimage.exposure.histogram(image[:, :, 0])
     green_hist = skimage.exposure.histogram(image[:, :, 1])
     blue_hist = skimage.exposure.histogram(image[:, :, 2])
@@ -206,36 +279,95 @@ def pixel_histogram(image):
 
 
 def is_first_upload(username):
+    """Checks if user has any images stored in DB
+
+    Args:
+        username (str): user
+
+    Returns:
+        bool: state of user images. True if no image
+        present for user
+    """
     return not UserData.objects.raw({"_id": username}).count()
 
 
 def encode_array(array):
+    """Encodes array to byte64
+
+    Args:
+        array (ndarray): array
+
+    Returns:
+        byte64: encoded array
+    """
     # Encoding of 3darray to save in database
     encoded_array = base64.b64encode(array)
     return encoded_array
 
 
 def decode_array(array):
+    """Decodes byte64 array
+
+    Args:
+        array (byte64): stored file to decode
+
+    Returns:
+        ndarray: decoded array
+    """
     # Decoding of 3darray to use for processing
     decoded_array = base64.b64encode(array)
     return decoded_array
 
 
 def encode_dict(dictionary):
+    """Encodes dictinary to binary
+
+    Args:
+        dictionary (dict): dictionary to encode
+
+    Returns:
+        binary: encoded dictionary
+    """
     encoded_dict = Binary(pickle.dumps(dictionary, protocol=3))
     return encoded_dict
 
 
 def decode_dict(dictionary):
+    """Decodes binary dictionary to native dictionary
+
+    Args:
+        dictionary (binary): storage to decode
+
+    Returns:
+        dict: decoded dictionary
+    """
     decoded_dict = pickle.loads(dictionary)
     return decoded_dict
 
 
 def calc_process_time(t1, t2):
+    """Calculates difference between times
+
+    Args:
+        t1 (float): initial time
+        t2 (float): end time
+
+    Returns:
+        str: difference in times
+    """
     return str(t2 - t1)
 
 
 def histogram_equalization(image):
+    """Equalized each color array individual and
+        returns equalized image
+
+    Args:
+        image (ndarray): image to equalize
+
+    Returns:
+        ndarray: equalized image
+    """
     r = image[:, :, 0]
     g = image[:, :, 1]
     b = image[:, :, 2]
@@ -248,11 +380,27 @@ def histogram_equalization(image):
 
 
 def invert(image):
+    """Inverts image pixel intensities
+
+    Args:
+        image (ndarray): image to invert
+
+    Returns:
+        ndarray: Inverted image
+    """
     inv_image = util.invert(image)
     return inv_image
 
 
 def log_compression(img):
+    """Logarithmic scaling of image
+
+    Args:
+        img (ndarray): image to scale
+
+    Returns:
+        ndarray: scaled image
+    """
     # LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
     # Apply log transform
     img_log = skimage.exposure.adjust_log(img)
@@ -510,7 +658,7 @@ def get_metrics(username):
 @app.route("/api/user_metrics/<username>", methods=["GET"])
 def get_user_metrics(username):
     metrics = get_metrics(username)
-    return metrics
+    return jsonify(metrics)
 
 
 if __name__ == "__main__":
