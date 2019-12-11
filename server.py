@@ -14,6 +14,7 @@ import numpy as np
 import logging
 import os
 import time
+import cv2
 
 app = Flask(__name__)
 
@@ -334,6 +335,15 @@ def log_compressed_upload(username, filepath):
     # Process image and encode it.
     start_time = time.time()
     # LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
+    img = cv2.imread(image)
+    # Apply log transform
+    img_log = (np.log(img + 1) / (np.log(1 + np.max(img)))) * 255
+    # Specify the data type
+    img_log = np.array(img_log, dtype=np.uint8)
+    # Display the image
+    cv2.imshow('log_image', img_log)
+    cv2.imshow('original_img', img)
+    cv2.waitKey(0)
     processing_time = str(time.time() - start_time)
 
     # Create image name
