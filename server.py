@@ -26,8 +26,42 @@ def database_connection():
                         level=logging.INFO,
                         filemode='w')
 
-
 # ----------------------------Login Screen--------------------------------
+def patient_exists(username):
+    user = LogIn.objects.raw({"_id": username})
+    if(user.count() == 0):
+        return False
+    return True
+
+
+def register_user(username):
+    user = LogIn(username=username).save()
+    metrics = UserMetrics(username=username,
+                          total_uploads=0,
+                          total_hist_equal=0,
+                          total_contrast_stretch=0,
+                          total_log_comp=0,
+                          total_inv_img=0)
+    metrics.save()
+
+
+@app.route("/api/login", methods=["POST"])
+def login_patient():
+    username = request.get_json()
+    if patient_exists(username) is False:
+        return jsonify("Bad Login Request"), 400
+    return jsonify("Login Successful"), 200
+
+
+@app.route("/api/new_user", methods=["POST"])
+def add_new_user():
+    username = request.get_json()
+    if patient_exists(username) is True:
+        return jsonify("Bad New User Request"), 400
+    register_user(username)
+    return jsonify("New User Registration Successful"), 200
+
+
 # -----------------------------Upload tab---------------------------------
 def validate_input_json(data, expected):
     # Validates input json is as expected
@@ -447,6 +481,23 @@ def upload_images():
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
 # ----------------------------User Metrics tab----------------------------
+def get_metrics(username):
+        user_entry = UserMetrics.objects.raw({"_id": username})
+        user = user_entry[0]
+        metrics = {
+                   "total_uploads": user.total_uploads,
+                   "total_hist_equal": user.total_hist_equal,
+                   "total_contrast_stretch": user.total_contrast_stretch,
+                   "total_log_comp": user.total_log_comp,
+                   "total_inv_img": user.total_inv_img
+                   }
+        return metrics
+
+
+@app.route("/api/user_metrics/<username>", methods=["GET"])
+def get_user_metrics(username):
+    metrics = get_metrics(username)
+    return metrics
 
 
 if __name__ == "__main__":
