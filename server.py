@@ -752,16 +752,16 @@ def get_metrics(username):
     Returns:
         dict: user metrics as integers
     """
-        user_entry = UserMetrics.objects.raw({"_id": username})
-        user = user_entry[0]
-        metrics = {
-                   "total_uploads": user.total_uploads,
-                   "total_hist_equal": user.total_hist_equal,
-                   "total_contrast_stretch": user.total_contrast_stretch,
-                   "total_log_comp": user.total_log_comp,
-                   "total_inv_img": user.total_inv_img
-                   }
-        return metrics
+    user_entry = UserMetrics.objects.raw({"_id": username})
+    user = user_entry[0]
+    metrics = {
+               "total_uploads": user.total_uploads,
+               "total_hist_equal": user.total_hist_equal,
+               "total_contrast_stretch": user.total_contrast_stretch,
+               "total_log_comp": user.total_log_comp,
+               "total_inv_img": user.total_inv_img
+               }
+    return metrics
 
 
 @app.route("/api/user_metrics/<username>", methods=["GET"])
