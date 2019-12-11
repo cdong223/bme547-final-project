@@ -1,0 +1,12 @@
+pymongo
+dnspython
+pymodm
+datetime
+python-dateutil
+sphinx
+requests
+flask
+pytest
+pytest-pep8
+numpy
+scikit-image
