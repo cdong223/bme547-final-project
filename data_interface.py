@@ -17,7 +17,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 matplotlib.use("TkAgg")
 
 
-
 # ---------------------------Login Screen--------------------------------
 def login_window():
     # Initialize global variables
