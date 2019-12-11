@@ -744,6 +744,16 @@ def upload_images():
 
 
 def find_histo(id, name):
+    """Given the user id and the image name, return the histogram value in a
+       np array
+
+    Args:
+        id (str): user id in the database
+        name (str): name of the file to find histogram of
+
+    Returns:
+        np.ndarray: contains histogram data
+    """
     user = UserData.objects.raw({"_id": id}).first()
     names = user.image_name
     histograms = user.hist_data
@@ -755,6 +765,17 @@ def find_histo(id, name):
 
 
 def find_metrics(id, name):
+    """Given the user id and the image name, return the image metrics value
+       in a list
+
+    Args:
+        id (str): user id in the database
+        name (str): name of the file to find metrics of
+
+    Returns:
+        list: contains image metrics data (CPU time, size of image, and upload
+        timestamp)
+    """
     user = UserData.objects.raw({"_id": id}).first()
     names = user.image_name
     CPU_times = user.processing_time
@@ -771,6 +792,16 @@ def find_metrics(id, name):
 
 
 def find_file(image_list, name):
+    """Given the list of image, the list of image files and the name of the
+       image, return the image file in the corresponding location
+
+    Args:
+        image_list (list): a list of list. First item is list of image names.
+        Second item is list of image files.
+
+    Returns:
+        string: the image file encoded in base64
+    """
     names = image_list[0]
     files = image_list[1]
     for index, item in enumerate(names):
@@ -780,6 +811,14 @@ def find_file(image_list, name):
 
 
 def get_all_images(id):
+    """Given the user id, return the list of images the user uploaded
+
+    Args:
+        id (str): user id in the database
+
+    Returns:
+        list: list of image names and the image files
+    """
     user = UserData.objects.raw({"_id": id}).first()
     name = user.image_name
     image = user.image
@@ -789,6 +828,17 @@ def get_all_images(id):
 
 @app.route("/api/histo/<id>/<name>", methods=["GET"])
 def histo(id, name):
+    """GET request. Given the user id and the image name, return the histogram
+       data in list
+
+    Args:
+        id (str): user id in the database
+        name (str): name of the file to find histogram of
+
+    Returns:
+        JSON: contains histogram data in list of list
+        Status code: indicate whether request is successful
+    """
     histo = find_histo(id, name)
     red = histo["red"][0].tolist()
     green = histo["green"][0].tolist()
@@ -799,12 +849,34 @@ def histo(id, name):
 
 @app.route("/api/get_image_metrics/<id>/<name>", methods=["GET"])
 def get_image_metrics(id, name):
+    """GET request. Given the user id and the image name, return the image
+       metrics
+
+    Args:
+        id (str): user id in the database
+        name (str): name of the file to find metrics of
+
+    Returns:
+        JSON: contains metrics data in list
+        Status code: indicate whether request is successful
+    """
     metrics = find_metrics(id, name)
     return jsonify(metrics), 200
 
 
 @app.route("/api/fetch_image/<id>/<name>", methods=["GET"])
 def fetch_image(id, name):
+    """GET request. Given the user id and the image name, return the image
+       file.
+
+    Args:
+        id (str): user id in the database
+        name (str): name of the file to find image file of
+
+    Returns:
+        JSON: contains metrics info in list
+        Status code: indicate whether request is successful
+    """
     image_list = get_all_images(id)
     image_file = find_file(image_list, name)
     image_file = np.frombuffer(base64.b64decode(image_file), np.uint8)
@@ -814,6 +886,15 @@ def fetch_image(id, name):
 
 @app.route("/api/get_all_images/<id>", methods=["GET"])
 def image_list(id):
+    """GET request. Given the user id, return the list of image stored for
+       the user.
+
+    Args:
+        id (str): user id in the database
+
+    Returns:
+        JSON: contains image name in list
+    """
     output_list = get_all_images(id)
     return jsonify(output_list[0]), 200
 # ----------------------------Download tab--------------------------------
