@@ -6,7 +6,6 @@ from PIL import ImageTk, Image
 import os
 import requests
 
-
 # ---------------------------Login Screen--------------------------------
 def login_window():
     # Initialize global variables
@@ -17,28 +16,27 @@ def login_window():
 
     # Login command
     def validateLogin():
-        # user = UserMetrics.objects.raw({"_id": username.get()})
-        # if(user.count() == 0):
-        if(username.get() == "bad"):  # TEMPORARY (future database connection)
-            username_not_recognized()
-        else:
+        r = requests.post("http://127.0.0.1:5000/api/login",
+                          json=username.get())
+        if r.status_code == 200:
             print("{} is logged in".format(username.get()))
             login_screen.withdraw()
             data_interface_window(username.get())
             return
+        else:
+            username_not_recognized()
 
     # New user command
     def validateNewUser():
-        # user = UserMetrics.objects.raw({"_id": username.get()})
-        # if(user.count() != 0):
-        if(username.get() == "bad"):  # TEMPORARY (future database connection)
-            username_already_exists()
-        else:
+        r = requests.post("http://127.0.0.1:5000/api/new_user",
+                          json=username.get())
+        if r.status_code == 200:
             print("{} is a new user".format(username.get()))
             login_screen.withdraw()
             data_interface_window(username.get())
-            print("close")
             return
+        else:
+            username_already_exists()
 
     # Screen layout
     login_screen = Tk()
@@ -166,20 +164,16 @@ def data_interface_window(username='NA'):
 
     # Function if select upload files button
     def upload_files(files, processing):
-        print(files)
         # Submit post request to validate files to upload
         # (including processing) and presence in dictionary
-        print("Making Validation Request")
         new_url = url + "/api/validate_images"
         validate_dict = {"username": str(username),
                          "filepaths": files,
                          "processing": str(processing)}
         r = requests.post(new_url, json=validate_dict)
-        print("Made Validation Request")
         out_dict = r.json()
         if r.status_code != 200:
-            print("Improper Request")
-            print(r.json())
+            return
 
         # Parse through dictionary to isolate files to upload.
         present_images = out_dict["present"]
@@ -193,22 +187,18 @@ def data_interface_window(username='NA'):
             images_already_present(present_images)
 
         # For filepath not present - submit post request of files.
-        print("Making Upload Request")
         new_url = url + "/api/upload_images"
         store_dict = {"username": str(username),
                       "images": new_images}
         r = requests.post(new_url, json=store_dict)
-        print("Made Upload Request")
         status = r.json()
-        print(status)
-        print(r.status_code)
+        
         # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
         reset_selection(files)
         upload_btn.config(state='disabled',
                           bg='grey',
                           fg='black')
-        print(files)
         return
 
     # Choose File Section
@@ -375,38 +365,28 @@ def data_interface_window(username='NA'):
     # ----------------------------Download tab--------------------------------
 
     # ----------------------------User Metrics tab----------------------------
-    # Retrieve metrics for given user from database
-    def get_metrics():
-        # user_entry = UserMetrics.objects.raw({"_id": username})
-        # user = user_entry[0]
-        # total_uploads = user.total_uploads
-        # total_hist_equal = user.total_hist_equal
-        # total_contrast_stretch = user.total_contrast_stretch
-        # total_log_comp = user.total_log_comp
-        # total_inv_img = user.total_inv_img
-        total_uploads = 6
-        total_hist_equal = 2
-        total_contrast_stretch = 1
-        total_log_comp = 0
-        total_inv_img = 3
-        return [total_uploads, total_hist_equal, total_contrast_stretch,
-                total_log_comp, total_inv_img]
-
     # Command for Display Current User Metrics button
     def button_action():
-        metrics = get_metrics()
-        upload_num.config(text=metrics[0])
-        hist_num.config(text=metrics[1])
-        contrast_num.config(text=metrics[2])
-        log_num.config(text=metrics[3])
-        invert_num.config(text=metrics[4])
+        r = requests.get("http://127.0.0.1:5000/api/user_metrics/"
+                         "{}".format(username))
+        metrics = r.json()
+        total_uploads = metrics["total_uploads"]
+        total_hist_equal = metrics["total_hist_equal"]
+        total_contrast_stretch = metrics["total_contrast_stretch"]
+        total_log_comp = metrics["total_log_comp"]
+        total_inv_img = metrics["total_inv_img"]
+        upload_num.config(text=total_uploads)
+        hist_num.config(text=total_hist_equal)
+        contrast_num.config(text=total_contrast_stretch)
+        log_num.config(text=total_log_comp)
+        invert_num.config(text=total_inv_img)
         return
 
-    # def on_tab_selected(event):
-    #     selected_tab = event.widget.select()
-    #     tab_text = event.widget.tab(selected_tab, "text")
-    #     if tab_text == "User Metrics":
-    #         print("Selected User Metrics tab")
+    def on_tab_selected(event):
+        selected_tab = event.widget.select()
+        tab_text = event.widget.tab(selected_tab, "text")
+        if tab_text == "User Metrics":
+            print("Selected User Metrics tab")
 
     metrics_tab.grid_columnconfigure(0, weight=1)
     metrics_tab.grid_columnconfigure(1, weight=2)
