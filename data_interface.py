@@ -5,7 +5,6 @@ from tkinter import scrolledtext
 from PIL import ImageTk, Image
 
 
-
 # ---------------------------Login Screen--------------------------------
 def login_window():
     # Initialize global variables
@@ -14,28 +13,27 @@ def login_window():
 
     # Login command
     def validateLogin():
-        # user = UserMetrics.objects.raw({"_id": username.get()})
-        # if(user.count() == 0):
-        if(username.get() == "bad"):  # TEMPORARY (future database connection)
-            username_not_recognized()
-        else:
+        r = requests.post("http://127.0.0.1:5000/api/login",
+                          json=username.get())
+        if r.status_code == 200:
             print("{} is logged in".format(username.get()))
             login_screen.withdraw()
             data_interface_window(username.get())
             return
+        else:
+            username_not_recognized()
 
     # New user command
     def validateNewUser():
-        # user = UserMetrics.objects.raw({"_id": username.get()})
-        # if(user.count() != 0):  
-        if(username.get() == "bad"):  # TEMPORARY (future database connection)
-            username_already_exists()
-        else:
+        r = requests.post("http://127.0.0.1:5000/api/new_user",
+                          json=username.get())
+        if r.status_code == 200:
             print("{} is a new user".format(username.get()))
             login_screen.withdraw()
             data_interface_window(username.get())
-            print("close")
             return
+        else:
+            username_already_exists()
 
     # Screen layout
     login_screen = Tk()
@@ -193,7 +191,6 @@ def data_interface_window(username='NA'):
                     sticky=W,
                     pady=5,
                     padx=100)
-
 
     # ----------------------------Display tab---------------------------------
     def left_display():  # find the picture according to the name
@@ -367,7 +364,6 @@ def data_interface_window(username='NA'):
     invert_label.grid(row=7, column=0, sticky=E)
     invert_num = ttk.Label(metrics_tab, text="")
     invert_num.grid(row=7, column=1, sticky=W)
-    
 
     # Run Window until close
     window.mainloop()
