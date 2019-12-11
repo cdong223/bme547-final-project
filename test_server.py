@@ -194,8 +194,9 @@ def test_decode_array(array, expected):
                  [7, 8, 9]],
                 [[1, 2, 3],
                  [4, 5, 6],
-                 [7, 8, 9]]])), [[9, 9, 9],
-                                 [28, 35, 42]])
+                 [7, 8, 9]]])), [[254, 254, 254],
+                                 [254, 254, 254],
+                                 [254, 254, 254]])
 ])
 def test_histogram_equalization(image, expected):
     from server import histogram_equalization
@@ -375,8 +376,5 @@ def test_inverted_image_upload(username, filepath, expected):
 
 if __name__ == "__main__":
     test_database_connection()
-    # test_original_upload('....',
-    #  '....',
-    #  'C:/Users/moave/Pictures/Saved Pictures/Aviary Stock Photo 1.png',
-    #  '.')
+
     print("test_server.py Main")
