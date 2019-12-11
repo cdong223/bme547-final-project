@@ -289,38 +289,28 @@ def data_interface_window(username='NA'):
     # ----------------------------Download tab--------------------------------
 
     # ----------------------------User Metrics tab----------------------------
-    # Retrieve metrics for given user from database
-    def get_metrics():
-        # user_entry = UserMetrics.objects.raw({"_id": username})
-        # user = user_entry[0]
-        # total_uploads = user.total_uploads
-        # total_hist_equal = user.total_hist_equal
-        # total_contrast_stretch = user.total_contrast_stretch
-        # total_log_comp = user.total_log_comp
-        # total_inv_img = user.total_inv_img
-        total_uploads = 6
-        total_hist_equal = 2
-        total_contrast_stretch = 1
-        total_log_comp = 0
-        total_inv_img = 3
-        return [total_uploads, total_hist_equal, total_contrast_stretch,
-                total_log_comp, total_inv_img]
-
     # Command for Display Current User Metrics button
     def button_action():
-        metrics = get_metrics()
-        upload_num.config(text=metrics[0])
-        hist_num.config(text=metrics[1])
-        contrast_num.config(text=metrics[2])
-        log_num.config(text=metrics[3])
-        invert_num.config(text=metrics[4])
+        r = requests.get("http://127.0.0.1:5000/api/user_metrics/"
+                         "{}".format(username))
+        metrics = r.json()
+        total_uploads = metrics["total_uploads"]
+        total_hist_equal = metrics["total_hist_equal"]
+        total_contrast_stretch = metrics["total_contrast_stretch"]
+        total_log_comp = metrics["total_log_comp"]
+        total_inv_img = metrics["total_inv_img"]
+        upload_num.config(text=total_uploads)
+        hist_num.config(text=total_hist_equal)
+        contrast_num.config(text=total_contrast_stretch)
+        log_num.config(text=total_log_comp)
+        invert_num.config(text=total_inv_img)
         return
 
-    # def on_tab_selected(event):
-    #     selected_tab = event.widget.select()
-    #     tab_text = event.widget.tab(selected_tab, "text")
-    #     if tab_text == "User Metrics":
-    #         print("Selected User Metrics tab")
+    def on_tab_selected(event):
+        selected_tab = event.widget.select()
+        tab_text = event.widget.tab(selected_tab, "text")
+        if tab_text == "User Metrics":
+            print("Selected User Metrics tab")
 
     metrics_tab.grid_columnconfigure(0, weight=1)
     metrics_tab.grid_columnconfigure(1, weight=2)
