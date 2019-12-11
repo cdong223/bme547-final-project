@@ -6,6 +6,7 @@ from PIL import ImageTk, Image
 import os
 import requests
 
+
 # ---------------------------Login Screen--------------------------------
 def login_window():
     # Initialize global variables
@@ -192,7 +193,7 @@ def data_interface_window(username='NA'):
                       "images": new_images}
         r = requests.post(new_url, json=store_dict)
         status = r.json()
-        
+
         # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
         reset_selection(files)
