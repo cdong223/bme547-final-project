@@ -1,2 +1,4 @@
 cjd53venv
-requirements.txt
+image_srv_venv
+__pycache__/
+image_server.log

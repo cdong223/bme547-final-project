@@ -22,31 +22,32 @@ def login_window():
     # Initialize global variables
     global login_screen
     global username
+    global url
+    url = "http://127.0.0.1:5000"
 
     # Login command
     def validateLogin():
-        # user = UserMetrics.objects.raw({"_id": username.get()})
-        # if(user.count() == 0):
-        if(username.get() == "bad"):  # TEMPORARY (future database connection)
-            username_not_recognized()
-        else:
+        r = requests.post("http://127.0.0.1:5000/api/login",
+                          json=username.get())
+        if r.status_code == 200:
             print("{} is logged in".format(username.get()))
             login_screen.withdraw()
             data_interface_window(username.get())
             return
+        else:
+            username_not_recognized()
 
     # New user command
     def validateNewUser():
-        # user = UserMetrics.objects.raw({"_id": username.get()})
-        # if(user.count() != 0):
-        if(username.get() == "bad"):  # TEMPORARY (future database connection)
-            username_already_exists()
-        else:
+        r = requests.post("http://127.0.0.1:5000/api/new_user",
+                          json=username.get())
+        if r.status_code == 200:
             print("{} is a new user".format(username.get()))
             login_screen.withdraw()
             data_interface_window(username.get())
-            print("close")
             return
+        else:
+            username_already_exists()
 
     # Screen layout
     login_screen = Tk()
@@ -108,6 +109,8 @@ def username_already_exists():
 def data_interface_window(username='NA'):
 
     # Set-up UI window
+
+    global window
     window = Toplevel(login_screen)
     window.title("{}'s Image Processing "  # Sets window title
                  "Application.".format(username))
@@ -128,35 +131,108 @@ def data_interface_window(username='NA'):
     tab_control.add(metrics_tab, text="User Metrics")
 
     # ----------------------------Upload tab--------------------------------
+    def sort_files(new_files, out_files):
+        # Returns sorted list of all elements with no repeated elements
+        for filepath in new_files:
+            if filepath not in all_files:
+                out_files.append(filepath)
+        # Returns all files wanting to read as tuple of string paths
+        return sorted(out_files)
+
+    # Appends only new files selected to display window
+    def display_files(root_box, files):
+        # Deletes current box and displays new files in alphabetical order
+        root_box.delete('1.0', END)
+        for filename in sorted(files):
+            head, tail = os.path.split(filename)
+            root_box.insert(END, tail+'\n')
+        return
+
     # Function to choose files wanted to open
-    def choose_files():  # Function for opening Files
-        ftypes = [('Portable Graphics Format .png', '*.png'),
-                  ('Joint Photographic Experts Group .jpeg', '*jpeg'),
-                  ('Tagged Image File Format .tiff', '*.tiff'),
-                  ('Compressed File Format .zip', '*.zip')]
-        files = filedialog.askopenfilenames(filetypes=ftypes)
-        file_display.insert(INSERT, files)
-        return files
+    def choose_files(out_files):
+        # Open file selection box
+        ftypes = [('.png (Portable Graphics Format)', '*.png'),
+                  ('.jpeg (Joint Photographic Experts Group)', '*jpeg'),
+                  ('.tiff (Tagged Image File Format)', '*.tiff'),
+                  ('.zip (Compressed File Format)', '*.zip')]
+        new_files = filedialog.askopenfilenames(filetypes=ftypes)
+        # Sort for non-repeated list of files
+        out_files = sort_files(new_files, out_files)  # Sorts files.
+        print(out_files)
+        # Display all files selected
+        display_files(file_display, out_files)  # Displays image names
+        # Allow selection of upload button as files are selected
+        if out_files:
+            upload_btn.config(state='normal',
+                              bg='white',
+                              fg='black')
+        return out_files
+
+    # Reset all files chosen upon upload
+    def reset_selection(files):
+        removable_files = tuple(files)
+        for filepath in removable_files:
+            files.remove(filepath)
+
+    # Function if select upload files button
+    def upload_files(files, processing):
+        # Submit post request to validate files to upload
+        # (including processing) and presence in dictionary
+        new_url = url + "/api/validate_images"
+        validate_dict = {"username": str(username),
+                         "filepaths": files,
+                         "processing": str(processing)}
+        r = requests.post(new_url, json=validate_dict)
+        out_dict = r.json()
+        if r.status_code != 200:
+            return
+
+        # Parse through dictionary to isolate files to upload.
+        present_images = out_dict["present"]
+        new_images = out_dict["not present"]
+
+        # Call function to display top level tab of files present and those
+        # uploading.
+        # If Continue button, move forward and delete display/reset file
+        # selection/disable upload. If not, simply return.
+        if len(present_images.keys()) != 0:
+            images_already_present(present_images)
+
+        # For filepath not present - submit post request of files.
+        new_url = url + "/api/upload_images"
+        store_dict = {"username": str(username),
+                      "images": new_images}
+        r = requests.post(new_url, json=store_dict)
+        status = r.json()
+        
+        # Reset GUI file download display and file selection
+        file_display.delete('1.0', END)
+        reset_selection(files)
+        upload_btn.config(state='disabled',
+                          bg='grey',
+                          fg='black')
+        return
 
     # Choose File Section
+    all_files = []  # Stores all filepaths of files wanting to upload.
     file_display = scrolledtext.ScrolledText(upload_tab,  # Display files
                                              width=50,
-                                             height=1)
+                                             height=5)
     file_display.grid(column=1, row=1)  # Location to display files
     file_btn = Button(upload_tab,  # Choose files button
                       text="Choose Files",
                       bg="white",
                       fg="black",
-                      command=choose_files)
+                      command=lambda: choose_files(all_files))
     file_btn.grid(column=2, row=1)  # Choose file button location
 
     # Choose Processing Type Section
     processing_type = StringVar()  # Variable for processing type
-    processing_type.set('hist')
+    processing_type.set('_histogramEqualized')
     hist_process = Radiobutton(upload_tab,
                                text='Histogram Equalization',
                                variable=processing_type,
-                               value='hist')
+                               value='_histogramEqualized')
     hist_process.grid(column=1,
                       row=2,
                       sticky=W,
@@ -165,7 +241,7 @@ def data_interface_window(username='NA'):
     cont_stretch = Radiobutton(upload_tab,
                                text='Contrast Stretching',
                                variable=processing_type,
-                               value='cont')
+                               value='_contrastStretched')
     cont_stretch.grid(column=1,
                       row=3,
                       sticky=W,
@@ -174,7 +250,7 @@ def data_interface_window(username='NA'):
     log_comp = Radiobutton(upload_tab,
                            text='Log Compression',
                            variable=processing_type,
-                           value='log')
+                           value='_logCompressed')
     log_comp.grid(column=1,
                   row=4,
                   sticky=W,
@@ -183,23 +259,21 @@ def data_interface_window(username='NA'):
     inv_img = Radiobutton(upload_tab,
                           text='Invert Image',
                           variable=processing_type,
-                          value='inv')
+                          value='_invertedImage')
     inv_img.grid(column=1,
                  row=5,
                  sticky=W,
                  pady=5,
                  padx=100)
 
-    # Function to upload files selected
-    def upload_files():
-        print("Upload Files")
-
     # Upload Selection Section
     upload_btn = Button(upload_tab,
                         text="Upload Files",
-                        bg="white",
+                        bg="grey",  # Set to grey when disabled
                         fg="black",
-                        command=upload_files)
+                        command=lambda: upload_files(all_files,
+                                                     processing_type),
+                        state="disabled")
     upload_btn.grid(column=1,  # Choose file button location
                     row=6,
                     sticky=W,
@@ -384,38 +458,28 @@ def data_interface_window(username='NA'):
     # ----------------------------Download tab--------------------------------
 
     # ----------------------------User Metrics tab----------------------------
-    # Retrieve metrics for given user from database
-    def get_metrics():
-        # user_entry = UserMetrics.objects.raw({"_id": username})
-        # user = user_entry[0]
-        # total_uploads = user.total_uploads
-        # total_hist_equal = user.total_hist_equal
-        # total_contrast_stretch = user.total_contrast_stretch
-        # total_log_comp = user.total_log_comp
-        # total_inv_img = user.total_inv_img
-        total_uploads = 6
-        total_hist_equal = 2
-        total_contrast_stretch = 1
-        total_log_comp = 0
-        total_inv_img = 3
-        return [total_uploads, total_hist_equal, total_contrast_stretch,
-                total_log_comp, total_inv_img]
-
     # Command for Display Current User Metrics button
     def button_action():
-        metrics = get_metrics()
-        upload_num.config(text=metrics[0])
-        hist_num.config(text=metrics[1])
-        contrast_num.config(text=metrics[2])
-        log_num.config(text=metrics[3])
-        invert_num.config(text=metrics[4])
+        r = requests.get("http://127.0.0.1:5000/api/user_metrics/"
+                         "{}".format(username))
+        metrics = r.json()
+        total_uploads = metrics["total_uploads"]
+        total_hist_equal = metrics["total_hist_equal"]
+        total_contrast_stretch = metrics["total_contrast_stretch"]
+        total_log_comp = metrics["total_log_comp"]
+        total_inv_img = metrics["total_inv_img"]
+        upload_num.config(text=total_uploads)
+        hist_num.config(text=total_hist_equal)
+        contrast_num.config(text=total_contrast_stretch)
+        log_num.config(text=total_log_comp)
+        invert_num.config(text=total_inv_img)
         return
 
-    # def on_tab_selected(event):
-    #     selected_tab = event.widget.select()
-    #     tab_text = event.widget.tab(selected_tab, "text")
-    #     if tab_text == "User Metrics":
-    #         print("Selected User Metrics tab")
+    def on_tab_selected(event):
+        selected_tab = event.widget.select()
+        tab_text = event.widget.tab(selected_tab, "text")
+        if tab_text == "User Metrics":
+            print("Selected User Metrics tab")
 
     metrics_tab.grid_columnconfigure(0, weight=1)
     metrics_tab.grid_columnconfigure(1, weight=2)
@@ -463,6 +527,63 @@ def data_interface_window(username='NA'):
     # Run Window until close
     window.mainloop()
     return
+
+
+def images_already_present(present_images):
+    # Screen closed upon clicking "Ok" button
+    def exit():
+        present_images_screen.destroy()
+        return
+
+    # Screen layout
+    present_images_screen = Toplevel(window)
+    present_images_screen.title("Invalid Image Upload")
+    present_images_screen.geometry('600x500')
+
+    present_images_screen.grid_columnconfigure(0, weight=1)
+    present_images_screen.grid_columnconfigure(1, weight=1)
+    # present_images_screen.grid_rowconfigure(3, weight=1)
+
+    note1 = Label(present_images_screen,
+                  text="These processed images already exist in the database.")
+    note1.grid(row=0, column=0, columnspan=2)
+
+    note2 = Label(present_images_screen,
+                  text="The matching requests will not be sent to the server.")
+    note2.grid(row=1, column=0, columnspan=2)
+
+    Label(present_images_screen, text="").grid(row=2, column=0)
+
+    Button(present_images_screen, text="Ok", command=exit).grid(row=3,
+                                                                column=0,
+                                                                columnspan=2)
+
+    Label(present_images_screen, text="").grid(row=4, column=0, columnspan=2)
+
+    category_L = Label(present_images_screen, text="UPLOADED FILES:")
+    category_L.grid(row=5, column=0)
+
+    category_R = Label(present_images_screen,
+                       text="LIST OF PROCESSED FILENAMES:")
+    category_R.grid(row=5, column=1)
+
+    Label(present_images_screen, text="").grid(row=6, column=0)
+
+    current_row = 7
+
+    for filepath in present_images.keys():
+        head, tail = os.path.split(filepath)
+        name_list = present_images.get(filepath)
+        num_rows = len(name_list)
+        Label(present_images_screen,
+              text=tail).grid(row=current_row, column=0, rowspan=num_rows)
+        for name in name_list:
+            Label(present_images_screen,
+                  text=name).grid(row=current_row, column=1)
+            current_row += 1
+        Label(present_images_screen,
+              text="").grid(row=current_row, column=0)
+        current_row += 1
 
 
 if __name__ == "__main__":
