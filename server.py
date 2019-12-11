@@ -196,6 +196,7 @@ def histogram_equalization(image):
     g_hist = skimage.exposure.equalize_hist(g)
     b_hist = skimage.exposure.equalize_hist(b)
     hist_image = np.dstack((r_hist, g_hist, b_hist))
+    hist_image = np.uint8(hist_image*255)
     return hist_image
 
 
