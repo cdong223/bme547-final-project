@@ -132,7 +132,7 @@ def test_is_image_present(stored_username, stored_img_name, username,
 
 @pytest.mark.parametrize("filepath, expected", [
     ('Cat.png',
-     '540x798')
+     '540x798x3')
 ])
 def test_get_num_pixels(filepath, expected):
     from server import get_num_pixels
@@ -421,7 +421,6 @@ def test_patient_exists(username, expected):
 def test_register_user(username, expected):
     from server import register_user
     register_user(username)
-
     login_user_entry = LogIn.objects.raw({"_id": username})
     login_user = login_user_entry[0]
     login_username = login_user.username
@@ -432,10 +431,8 @@ def test_register_user(username, expected):
     total_contrast_stretch = metrics_user.total_contrast_stretch
     total_log_comp = metrics_user.total_log_comp
     total_inv_img = metrics_user.total_inv_img
-
     result = [login_username, total_uploads, total_hist_equal,
               total_contrast_stretch, total_log_comp, total_inv_img]
-
     assert result == expected
     LogIn.objects.raw({"_id": username}).delete()
     UserMetrics.objects.raw({"_id": username}).delete()
@@ -443,5 +440,4 @@ def test_register_user(username, expected):
     
 if __name__ == "__main__":
     test_database_connection()
-
     print("test_server.py Main")

@@ -26,10 +26,11 @@ def database_connection():
                         level=logging.INFO,
                         filemode='w')
 
+
 # ----------------------------Login Screen--------------------------------
 def patient_exists(username):
     user = LogIn.objects.raw({"_id": username})
-    if(user.count() == 0):
+    if user.count() == 0:
         return False
     return True
 
@@ -161,7 +162,7 @@ def validate_images():
                                                          '_original')] \
             = '_original'
         all_images_dict[filepath][img_name_from_filepath(filepath,
-                                                         data["processing"])] \
+                                                         data["processing"])]\
             = data["processing"]
 
     # Retrieve images present and not present with processing type
@@ -480,6 +481,8 @@ def upload_images():
     return jsonify("Uploaded all images successfully")
 # -----------------------------Display tab--------------------------------
 # ----------------------------Download tab--------------------------------
+
+
 # ----------------------------User Metrics tab----------------------------
 def get_metrics(username):
         user_entry = UserMetrics.objects.raw({"_id": username})
