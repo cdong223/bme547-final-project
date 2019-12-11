@@ -204,7 +204,7 @@ def invert(image):
     return inv_image
 
 
-def log_compression(image):
+def log_compression(img):
     # LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
     # Apply log transform
     img_log = (np.log(img + 1) / (np.log(1 + np.max(img)))) * 255
