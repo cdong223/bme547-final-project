@@ -30,7 +30,7 @@ def login_window():
     # New user command
     def validateNewUser():
         # user = UserMetrics.objects.raw({"_id": username.get()})
-        # if(user.count() != 0):  
+        # if(user.count() != 0):
         if(username.get() == "bad"):  # TEMPORARY (future database connection)
             username_already_exists()
         else:
@@ -99,6 +99,8 @@ def username_already_exists():
 # ------------------------------Main UI Window---------------------------------
 def data_interface_window(username='NA'):
     # Set-up UI window
+
+    global window
     window = Toplevel(login_screen)
     window.title("{}'s Image Processing "  # Sets window title
                  "Application.".format(username))
@@ -148,7 +150,7 @@ def data_interface_window(username='NA'):
         out_files = sort_files(new_files, out_files)  # Sorts files.
         print(out_files)
         # Display all files selected
-        display_files(file_display, out_files)  # Displays image names in file_display box.
+        display_files(file_display, out_files)  # Displays image names
         # Allow selection of upload button as files are selected
         if out_files:
             upload_btn.config(state='normal',
@@ -165,7 +167,8 @@ def data_interface_window(username='NA'):
     # Function if select upload files button
     def upload_files(files, processing):
         print(files)
-        # Submit post request to validate files to upload (including processing) and presence in dictionary
+        # Submit post request to validate files to upload
+        # (including processing) and presence in dictionary
         print("Making Validation Request")
         new_url = url + "/api/validate_images"
         validate_dict = {"username": str(username),
@@ -182,8 +185,12 @@ def data_interface_window(username='NA'):
         present_images = out_dict["present"]
         new_images = out_dict["not present"]
 
-        # Call function to display top level tab of files present and those uploading.
-        # If Continue button, move forward and delete display/reset file selection/disable upload. If not, simply return.
+        # Call function to display top level tab of files present and those
+        # uploading.
+        # If Continue button, move forward and delete display/reset file
+        # selection/disable upload. If not, simply return.
+        if len(present_images.keys()) != 0:
+            images_already_present(present_images)
 
         # For filepath not present - submit post request of files.
         print("Making Upload Request")
@@ -262,7 +269,8 @@ def data_interface_window(username='NA'):
                         text="Upload Files",
                         bg="grey",  # Set to grey when disabled
                         fg="black",
-                        command=lambda: upload_files(all_files, processing_type),
+                        command=lambda: upload_files(all_files,
+                                                     processing_type),
                         state="disabled")
     upload_btn.grid(column=1,  # Choose file button location
                     row=6,
@@ -442,11 +450,67 @@ def data_interface_window(username='NA'):
     invert_label.grid(row=7, column=0, sticky=E)
     invert_num = ttk.Label(metrics_tab, text="")
     invert_num.grid(row=7, column=1, sticky=W)
-    
 
     # Run Window until close
     window.mainloop()
     return
+
+
+def images_already_present(present_images):
+    # Screen closed upon clicking "Ok" button
+    def exit():
+        present_images_screen.destroy()
+        return
+
+    # Screen layout
+    present_images_screen = Toplevel(window)
+    present_images_screen.title("Invalid Image Upload")
+    present_images_screen.geometry('600x500')
+
+    present_images_screen.grid_columnconfigure(0, weight=1)
+    present_images_screen.grid_columnconfigure(1, weight=1)
+    # present_images_screen.grid_rowconfigure(3, weight=1)
+
+    note1 = Label(present_images_screen,
+                  text="These processed images already exist in the database.")
+    note1.grid(row=0, column=0, columnspan=2)
+
+    note2 = Label(present_images_screen,
+                  text="The matching requests will not be sent to the server.")
+    note2.grid(row=1, column=0, columnspan=2)
+
+    Label(present_images_screen, text="").grid(row=2, column=0)
+
+    Button(present_images_screen, text="Ok", command=exit).grid(row=3,
+                                                                column=0,
+                                                                columnspan=2)
+
+    Label(present_images_screen, text="").grid(row=4, column=0, columnspan=2)
+
+    category_L = Label(present_images_screen, text="UPLOADED FILES:")
+    category_L.grid(row=5, column=0)
+
+    category_R = Label(present_images_screen,
+                       text="LIST OF PROCESSED FILENAMES:")
+    category_R.grid(row=5, column=1)
+
+    Label(present_images_screen, text="").grid(row=6, column=0)
+
+    current_row = 7
+
+    for filepath in present_images.keys():
+        head, tail = os.path.split(filepath)
+        name_list = present_images.get(filepath)
+        num_rows = len(name_list)
+        Label(present_images_screen,
+              text=tail).grid(row=current_row, column=0, rowspan=num_rows)
+        for name in name_list:
+            Label(present_images_screen,
+                  text=name).grid(row=current_row, column=1)
+            current_row += 1
+        Label(present_images_screen,
+              text="").grid(row=current_row, column=0)
+        current_row += 1
 
 
 if __name__ == "__main__":
