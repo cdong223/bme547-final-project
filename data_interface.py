@@ -204,7 +204,6 @@ def data_interface_window(username='NA'):
                       "images": new_images}
         r = requests.post(new_url, json=store_dict)
         status = r.json()
-        
         # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
         reset_selection(files)
@@ -292,7 +291,7 @@ def data_interface_window(username='NA'):
         print(fetch_image_url)
         image_file = requests.get(fetch_image_url)
         image_file = image_file.json()
-
+        
         fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
                             + username + "/" + image_name_1.get()
         print(fetch_metrics_url)
