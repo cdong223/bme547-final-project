@@ -147,7 +147,6 @@ def data_interface_window(username='NA'):
         new_files = filedialog.askopenfilenames(filetypes=ftypes)
         # Sort for non-repeated list of files
         out_files = sort_files(new_files, out_files)  # Sorts files.
-        print(out_files)
         # Display all files selected
         display_files(file_display, out_files)  # Displays image names
         # Allow selection of upload button as files are selected
@@ -168,9 +167,9 @@ def data_interface_window(username='NA'):
         # Submit post request to validate files to upload
         # (including processing) and presence in dictionary
         new_url = url + "/api/validate_images"
-        validate_dict = {"username": str(username),
+        validate_dict = {"username": username,
                          "filepaths": files,
-                         "processing": str(processing)}
+                         "processing": processing.get()}
         r = requests.post(new_url, json=validate_dict)
         out_dict = r.json()
         if r.status_code != 200:
@@ -184,12 +183,14 @@ def data_interface_window(username='NA'):
         # uploading.
         # If Continue button, move forward and delete display/reset file
         # selection/disable upload. If not, simply return.
+        print(new_images)
+        print(present_images)
         if len(present_images.keys()) != 0:
             images_already_present(present_images)
 
         # For filepath not present - submit post request of files.
         new_url = url + "/api/upload_images"
-        store_dict = {"username": str(username),
+        store_dict = {"username": username,
                       "images": new_images}
         r = requests.post(new_url, json=store_dict)
         status = r.json()
