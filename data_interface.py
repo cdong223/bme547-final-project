@@ -2,9 +2,20 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import scrolledtext
+from tkinter import messagebox
 from PIL import ImageTk, Image
-import os
 import requests
+import pickle
+import numpy as np
+import base64
+from io import BytesIO
+import json
+import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+matplotlib.use("TkAgg")
+
 
 # ---------------------------Login Screen--------------------------------
 def login_window():
@@ -96,6 +107,7 @@ def username_already_exists():
 
 # ------------------------------Main UI Window---------------------------------
 def data_interface_window(username='NA'):
+
     # Set-up UI window
 
     global window
@@ -192,7 +204,6 @@ def data_interface_window(username='NA'):
                       "images": new_images}
         r = requests.post(new_url, json=store_dict)
         status = r.json()
-        
         # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
         reset_selection(files)
@@ -272,73 +283,153 @@ def data_interface_window(username='NA'):
     def left_display():  # find the picture according to the name
         # Only dummy variables are used now, but should be easy to
         # find image metrics if given image name
-        if image_name_1.get() == 'A':
-            path = "Apple.png"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(A[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(A[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(A[2]))
-        if image_name_1.get() == 'B':
-            path = "BD.jpg"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(B[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(B[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(B[2]))
-        if image_name_1.get() == 'C':
-            path = "Cat.jpg"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(C[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(C[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(C[2]))
-        print(path)
+        if image_name_1.get() == '':
+            messagebox.showerror("Error", "Please select an option first")
+            return
+        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"\
+                          + username + "/" + image_name_1.get().strip("")
+        print(fetch_image_url)
+        image_file = requests.get(fetch_image_url)
+        image_file = image_file.json()
+
+        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
+                            + username + "/" + image_name_1.get()
+        print(fetch_metrics_url)
+        image_metrics = requests.get(fetch_metrics_url)
+        image_metrics = image_metrics.json()
+
+        cpu = ttk.Label(display_tab, text="CPU Time: "
+                                          "{}".format(image_metrics[0]))
+        size = ttk.Label(display_tab, text="Size: "
+                                           "{}".format(image_metrics[1]))
+        timestamp = ttk.Label(display_tab, text="Timestamp: "
+                                                "{}".format(image_metrics[2]))
+
         timestamp.grid(column=0, row=5, pady=5)
         cpu.grid(column=0, row=6, pady=5)
         size.grid(column=0, row=7, pady=5)
-        load = Image.open(path)
-        load = load.resize((150, 150), Image.ANTIALIAS)
-        render = ImageTk.PhotoImage(load)
+
+        size_format = image_metrics[1]
+        size_list = size_format.split("x")
+
+        image_file = np.asarray(image_file)
+        reshape_arg = (int(size_list[1]), int(size_list[0]), int(size_list[2]))
+        image_file = image_file.reshape(reshape_arg)
+
+        histo_url = "http://127.0.0.1:5000/api/histo/"\
+                    + username + "/" + image_name_1.get().strip("")
+        histo = requests.get(histo_url)
+        histo = histo.json()
+        red = histo[0]
+        green = histo[1]
+        blue = histo[2]
+        figure = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot = figure.add_subplot(1, 1, 1)
+        plot.hist(red)
+        canvas = FigureCanvasTkAgg(figure, display_tab)
+        canvas.get_tk_widget().grid(row=8, column=0)
+        figure2 = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot2 = figure2.add_subplot(1, 1, 1)
+        plot2.hist(green)
+        canvas = FigureCanvasTkAgg(figure2, display_tab)
+        canvas.get_tk_widget().grid(row=9, column=0)
+        figure3 = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot3 = figure3.add_subplot(1, 1, 1)
+        plot3.hist(blue)
+        canvas = FigureCanvasTkAgg(figure3, display_tab)
+        canvas.get_tk_widget().grid(row=10, column=0)
+
+        image_display = Image.fromarray(image_file, 'RGB')
+        image_display = image_display.resize((100, 100), Image.ANTIALIAS)
+        render = ImageTk.PhotoImage(image_display)
         img = Label(display_tab, image=render)
         img.image = render
         img.grid(column=0, row=4, pady=5)
         return
 
     def right_display():  # find the picture according to the name
-        if image_name_2.get() == 'A':
-            path = "Apple.png"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(A[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(A[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(A[2]))
-        if image_name_2.get() == 'B':
-            path = "BD.jpg"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(B[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(B[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(B[2]))
-            print(path)
-        if image_name_2.get() == 'C':
-            path = "Cat.jpg"
-            timestamp = ttk.Label(display_tab,
-                                  text="Timestamp: {}".format(C[0]))
-            cpu = ttk.Label(display_tab, text="CPU Time: {}".format(C[1]))
-            size = ttk.Label(display_tab, text="Size: {}".format(C[2]))
-        print(path)
+        if image_name_2.get() == '':
+            messagebox.showerror("Error", "Please select an option first")
+            return
+        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"\
+                          + username + "/" + image_name_2.get()
+        image_file = requests.get(fetch_image_url)
+        image_file = image_file.json()
+
+        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
+                            + username + "/" + image_name_2.get()
+        image_metrics = requests.get(fetch_metrics_url)
+        image_metrics = image_metrics.json()
+
+        cpu = ttk.Label(display_tab, text="CPU Time: "
+                                          "{}".format(image_metrics[0]))
+        size = ttk.Label(display_tab, text="Size: "
+                                           "{}".format(image_metrics[1]))
+        timestamp = ttk.Label(display_tab, text="Timestamp: "
+                                                "{}".format(image_metrics[2]))
+
         timestamp.grid(column=2, row=5, pady=5)
         cpu.grid(column=2, row=6, pady=5)
         size.grid(column=2, row=7, pady=5)
-        load = Image.open(path)
-        load = load.resize((150, 150), Image.ANTIALIAS)
-        render = ImageTk.PhotoImage(load)
+
+        size_format = image_metrics[1]
+        size_list = size_format.split("x")
+
+        image_file = np.asarray(image_file)
+        reshape_arg = (int(size_list[1]), int(size_list[0]), int(size_list[2]))
+        image_file = image_file.reshape(reshape_arg)
+
+        histo_url = "http://127.0.0.1:5000/api/histo/"\
+                    + username + "/" + image_name_2.get().strip("")
+        histo = requests.get(histo_url)
+        histo = histo.json()
+        red = histo[0]
+        green = histo[1]
+        blue = histo[2]
+        figure = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot = figure.add_subplot(1, 1, 1)
+        plot.hist(red)
+        canvas = FigureCanvasTkAgg(figure, display_tab)
+        canvas.get_tk_widget().grid(row=8, column=2)
+        figure2 = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot2 = figure2.add_subplot(1, 1, 1)
+        plot2.hist(green)
+        canvas = FigureCanvasTkAgg(figure2, display_tab)
+        canvas.get_tk_widget().grid(row=9, column=2)
+        figure3 = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot3 = figure3.add_subplot(1, 1, 1)
+        plot3.hist(blue)
+        canvas = FigureCanvasTkAgg(figure3, display_tab)
+        canvas.get_tk_widget().grid(row=10, column=2)
+
+        image_display = Image.fromarray(image_file, 'RGB')
+        image_display = image_display.resize((100, 100), Image.ANTIALIAS)
+        render = ImageTk.PhotoImage(image_display)
         img = Label(display_tab, image=render)
         img.image = render
         img.grid(column=2, row=4, pady=5)
         return
 
-    A = ["2019/12/3", "1.5s", "600x600"]  # Dummy variables of image metrics
-    B = ["2019/12/4", "1.2s", "400x400"]
-    C = ["2019/12/5", "1.4s", "200x200"]
+    def refresh_list2():
+        print("Refreshed")
+        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
+                             + username
+        image_list = requests.get(get_image_list_url)
+        image_list = image_list.json()
+        display_sel_2['values'] = image_list
+        return
 
-    ttk.Separator(display_tab, orient=VERTICAL).grid(column=1, row=0,
+    def refresh_list1():
+        print("Refreshed")
+        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
+                             + username
+        image_list = requests.get(get_image_list_url)
+        image_list = image_list.json()
+        # image_list = image_list.strip('][').split(',')
+        display_sel_1['values'] = image_list
+        return
+
+    ttk.Separator(display_tab, orient=VERTICAL).grid(column=1, row=1,
                                                      rowspan=10, sticky='ns')
 
     choice_1 = ttk.Label(display_tab, text="Choose picture 1 from below")
@@ -346,16 +437,17 @@ def data_interface_window(username='NA'):
     choice_2 = ttk.Label(display_tab, text="Choose picture 2 from below")
     choice_2.grid(column=2, row=1, padx=50, pady=5)
 
-    image_list = ["A", "B", "C"]  # Need to read the actual list of image
     image_name_1 = StringVar()
-    display_sel_1 = ttk.Combobox(display_tab, textvariable=image_name_1)
+    display_sel_1 = ttk.Combobox(display_tab, textvariable=image_name_1,
+                                 postcommand=refresh_list1)
     display_sel_1.grid(column=0, row=2, pady=5)
-    display_sel_1['values'] = image_list
+    # display_sel_1['values'] = image_list
     display_sel_1.state(['readonly'])
     image_name_2 = StringVar()
-    display_sel_2 = ttk.Combobox(display_tab, textvariable=image_name_2)
+    display_sel_2 = ttk.Combobox(display_tab, textvariable=image_name_2,
+                                 postcommand=refresh_list2)
     display_sel_2.grid(column=2, row=2, pady=5)
-    display_sel_2['values'] = image_list
+    # display_sel_2['values'] = image_list
     display_sel_2.state(['readonly'])
 
     ok_btn_left = ttk.Button(display_tab, text='ok', command=left_display)
