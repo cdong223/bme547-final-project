@@ -255,9 +255,7 @@ def invert(image):
 def log_compression(img):
     # LOG COMPRESSED IMAGE PROCESSING AND ENCODING OF IMAGE
     # Apply log transform
-    img_log = (np.log(img + 1) / (np.log(1 + np.max(img)))) * 255
-    # Specify the data type
-    img_log = np.array(img_log, dtype=np.uint8)
+    img_log = skimage.exposure.adjust_log(img)
     return img_log
 
 
