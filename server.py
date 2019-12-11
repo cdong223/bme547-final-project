@@ -125,7 +125,7 @@ def validate_images():
         all_images_dict[filepath] = {}
         all_images_dict[filepath][img_name_from_filepath(filepath,
                                                          '_original')] \
-                                                         = '_original'
+            = '_original'
         all_images_dict[filepath][img_name_from_filepath(filepath,
                                                          data["processing"])] \
             = data["processing"]
