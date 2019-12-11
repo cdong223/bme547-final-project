@@ -24,11 +24,12 @@ def login_window():
     global login_screen
     global username
     global url
-    url = "http://127.0.0.1:5000"
+    # url = "http://127.0.0.1:5000"
+    url = "http://vcm-11703.vm.duke.edu:5000"
 
     # Login command
     def validateLogin():
-        r = requests.post("http://127.0.0.1:5000/api/login",
+        r = requests.post("http://vcm-11703.vm.duke.edu:5000/api/login",
                           json=username.get())
         if r.status_code == 200:
             print("{} is logged in".format(username.get()))
@@ -40,7 +41,7 @@ def login_window():
 
     # New user command
     def validateNewUser():
-        r = requests.post("http://127.0.0.1:5000/api/new_user",
+        r = requests.post("http://vcm-11703.vm.duke.edu:5000/api/new_user",
                           json=username.get())
         if r.status_code == 200:
             print("{} is a new user".format(username.get()))
@@ -292,14 +293,18 @@ def data_interface_window(username='NA'):
         if image_name_1.get() == '':
             messagebox.showerror("Error", "Please select an option first")
             return
-        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"\
+        url_stem = "http://vcm-11703.vm.duke.edu:5000/api/fetch_image/"
+        fetch_image_url = url_stem\
                           + username + "/" + image_name_1.get().strip("")
+        # fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"\
+        #                   + username + "/" + image_name_1.get().strip("")
         print(fetch_image_url)
         image_file = requests.get(fetch_image_url)
         image_file = image_file.json()
-
-        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
-                            + username + "/" + image_name_1.get()
+        url_stem = "http://vcm-11703.vm.duke.edu:5000/api/get_image_metrics/"
+        fetch_metrics_url = url_stem + username + "/" + image_name_1.get()
+        # fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
+        #                     + username + "/" + image_name_1.get()
         print(fetch_metrics_url)
         image_metrics = requests.get(fetch_metrics_url)
         image_metrics = image_metrics.json()
@@ -324,8 +329,10 @@ def data_interface_window(username='NA'):
         reshape_arg = (int(size_list[1]), int(size_list[0]), int(size_list[2]))
         image_file = image_file.reshape(reshape_arg)
 
-        histo_url = "http://127.0.0.1:5000/api/histo/"\
+        histo_url = "http://vcm-11703.vm.duke.edu:5000/api/histo/"\
                     + username + "/" + image_name_1.get().strip("")
+        # histo_url = "http://127.0.0.1:5000/api/histo/"\
+        #             + username + "/" + image_name_1.get().strip("")
         histo = requests.get(histo_url)
         histo = histo.json()
         red = histo[0]
@@ -359,13 +366,20 @@ def data_interface_window(username='NA'):
         if image_name_2.get() == '':
             messagebox.showerror("Error", "Please select an option first")
             return
-        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"\
+
+        url_stem = "http://vcm-11703.vm.duke.edu:5000/api/fetch_image/"
+        fetch_image_url = url_stem\
                           + username + "/" + image_name_2.get()
+        # fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"\
+        #                   + username + "/" + image_name_2.get()
         image_file = requests.get(fetch_image_url)
         image_file = image_file.json()
 
-        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
+        url_stem = "http://vcm-11703.vm.duke.edu:5000/api/get_image_metrics/"
+        fetch_metrics_url = url_stem\
                             + username + "/" + image_name_2.get()
+        # fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
+        #                     + username + "/" + image_name_2.get()
         image_metrics = requests.get(fetch_metrics_url)
         image_metrics = image_metrics.json()
 
@@ -388,8 +402,10 @@ def data_interface_window(username='NA'):
         reshape_arg = (int(size_list[1]), int(size_list[0]), int(size_list[2]))
         image_file = image_file.reshape(reshape_arg)
 
-        histo_url = "http://127.0.0.1:5000/api/histo/"\
+        histo_url = "http://vcm-11703.vm.duke.edu:5000/api/histo/"\
                     + username + "/" + image_name_2.get().strip("")
+        # histo_url = "http://127.0.0.1:5000/api/histo/"\
+        #             + username + "/" + image_name_2.get().strip("")
         histo = requests.get(histo_url)
         histo = histo.json()
         red = histo[0]
@@ -420,7 +436,8 @@ def data_interface_window(username='NA'):
         return
 
     def refresh_list2():
-        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
+        url_stem = "http://vcm-11703.vm.duke.edu:5000/api/get_all_images/"
+        get_image_list_url = url_stem\
                              + username
         image_list = requests.get(get_image_list_url)
         image_list = image_list.json()
@@ -428,7 +445,8 @@ def data_interface_window(username='NA'):
         return
 
     def refresh_list1():
-        get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
+        url_stem = "http://vcm-11703.vm.duke.edu:5000/api/get_all_images/"
+        get_image_list_url = url_stem\
                              + username
         image_list = requests.get(get_image_list_url)
         image_list = image_list.json()
@@ -466,7 +484,7 @@ def data_interface_window(username='NA'):
     # ----------------------------User Metrics tab----------------------------
     # Command for Display Current User Metrics button
     def button_action():
-        r = requests.get("http://127.0.0.1:5000/api/user_metrics/"
+        r = requests.get("http://vcm-11703.vm.duke.edu:5000/api/user_metrics/"
                          "{}".format(username))
         metrics = r.json()
         total_uploads = metrics["total_uploads"]
