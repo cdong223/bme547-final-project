@@ -1,10 +1,5 @@
 pymongo
 dnspython
-ipaddress
-certifi
-wincertstore
-python-snappy
-zstandard
 pymodm
 datetime
 python-dateutil
