@@ -318,6 +318,7 @@ def data_interface_window(username='NA'):
         size_list = size_format.split("x")
 
         image_file = np.asarray(image_file)
+        image_file = image_file.astype(np.uint8)
         # print(image_file)
         reshape_arg = (int(size_list[1]), int(size_list[0]), int(size_list[2]))
         image_file = image_file.reshape(reshape_arg)
@@ -382,6 +383,7 @@ def data_interface_window(username='NA'):
         size_list = size_format.split("x")
 
         image_file = np.asarray(image_file)
+        image_file = image_file.astype(np.uint8)
         reshape_arg = (int(size_list[1]), int(size_list[0]), int(size_list[2]))
         image_file = image_file.reshape(reshape_arg)
 
