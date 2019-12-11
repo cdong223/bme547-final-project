@@ -208,6 +208,7 @@ def data_interface_window(username='NA'):
                       "images": new_images}
         r = requests.post(new_url, json=store_dict)
         status = r.json()
+        print(status)
 
         # Reset GUI file download display and file selection
         file_display.delete('1.0', END)
