@@ -482,6 +482,8 @@ def upload_images():
 
     return jsonify("Uploaded all images successfully")
 # -----------------------------Display tab--------------------------------
+
+
 def find_histo(id, name):
     user = UserData.objects.raw({"_id": id}).first()
     names = user.image_name
