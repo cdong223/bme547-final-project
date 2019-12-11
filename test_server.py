@@ -436,8 +436,8 @@ def test_register_user(username, expected):
     assert result == expected
     LogIn.objects.raw({"_id": username}).delete()
     UserMetrics.objects.raw({"_id": username}).delete()
-    
-    
+
+
 if __name__ == "__main__":
     test_database_connection()
     print("test_server.py Main")
