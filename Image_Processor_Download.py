@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk
 
+
+
 def design_download_window():
     """Main GUI User Interface
 
@@ -15,7 +17,6 @@ def design_download_window():
     """
 
     selected_saved_images = []
-
 
     saved_images = ["bd1", "blue", "yepp"]
 
@@ -48,6 +49,9 @@ def design_download_window():
 
         :return :
         """
+        nonlocal selected_saved_images
+        
+
         current_image_type = image_type.get()
         from download_GUI_functions import image_format_modifier
         response = image_format_modifier(current_image_type, selected_saved_images)
@@ -55,6 +59,8 @@ def design_download_window():
             messagebox.showerror("Missing Image Format", "Please select an image format.")
         else:
             selected_saved_images = response
+        return
+        selected_saved_images.clear()
         return
 
     def saved_images_listbox_execution():
