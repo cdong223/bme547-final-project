@@ -6,6 +6,15 @@ from tkinter import messagebox
 from PIL import ImageTk, Image
 import requests
 import pickle
+import numpy as np
+import base64
+from io import BytesIO
+import json
+import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+matplotlib.use("TkAgg")
 
 
 # ---------------------------Login Screen--------------------------------
@@ -203,14 +212,18 @@ def data_interface_window(username='NA'):
         # find image metrics if given image name
         if image_name_1.get() == '':
             messagebox.showerror("Error", "Please select an option first")
-        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image"\
-                          + username + image_name_1.get()
-        image_file = requests.post(fetch_image_url)
-        image_file = image_file.text
-        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics"\
-                            + username + image_name_1.get()
-        image_metrics = requests.post(fetch_metrics_url)
-        image_metrics = image_metrics.text
+            return
+        fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"\
+                          + username + "/" + image_name_1.get().strip("")
+        print(fetch_image_url)
+        image_file = requests.get(fetch_image_url)
+        image_file = image_file.json()
+
+        fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
+                            + username + "/" + image_name_1.get()
+        print(fetch_metrics_url)
+        image_metrics = requests.get(fetch_metrics_url)
+        image_metrics = image_metrics.json()
 
         cpu = ttk.Label(display_tab, text="CPU Time: "
                                           "{}".format(image_metrics[0]))
@@ -223,37 +236,57 @@ def data_interface_window(username='NA'):
         cpu.grid(column=0, row=6, pady=5)
         size.grid(column=0, row=7, pady=5)
 
-        histogram = image_metrics[3]
-        decoded_image = pickle.loads(image_file)
-        decoded_histo = pickle.loads(histogram)
-        image_display = Image.fromarray(decoded_image, 'RGB')
-        histo_display = Image.fromarray(decoded_histo, 'RGB')
+        size_format = image_metrics[1]
+        size_list = size_format.split("x")
 
-        image_display = image_display.resize((150, 150), Image.ANTIALIAS)
+        image_file = np.asarray(image_file)
+        reshape_arg = (int(size_list[1]), int(size_list[0]), int(size_list[2]))
+        image_file = image_file.reshape(reshape_arg)
+
+        histo_url = "http://127.0.0.1:5000/api/histo/"\
+                          + username + "/" + image_name_1.get().strip("")
+        histo = requests.get(histo_url)
+        histo = histo.json()
+        red = histo[0]
+        green = histo[1]
+        blue = histo[2]
+        figure = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot = figure.add_subplot(1, 1, 1)
+        plot.hist(red)
+        canvas = FigureCanvasTkAgg(figure, display_tab)
+        canvas.get_tk_widget().grid(row=8, column=0)
+        figure2 = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot2 = figure2.add_subplot(1, 1, 1)
+        plot2.hist(green)
+        canvas = FigureCanvasTkAgg(figure2, display_tab)
+        canvas.get_tk_widget().grid(row=9, column=0)
+        figure3 = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot3 = figure3.add_subplot(1, 1, 1)
+        plot3.hist(blue)
+        canvas = FigureCanvasTkAgg(figure3, display_tab)
+        canvas.get_tk_widget().grid(row=10, column=0)
+
+        image_display = Image.fromarray(image_file, 'RGB')
+        image_display = image_display.resize((100, 100), Image.ANTIALIAS)
         render = ImageTk.PhotoImage(image_display)
         img = Label(display_tab, image=render)
         img.image = render
         img.grid(column=0, row=4, pady=5)
-
-        histo_display = histo_display.resize((100, 100), Image.ANTIALIAS)
-        render2 = ImageTk.PhotoImage(histo_display)
-        img2 = Label(display_tab, image=render2)
-        img2.image = render2
-        img2.grid(column=0, row=8, pady=5)
-
         return
 
     def right_display():  # find the picture according to the name
         if image_name_2.get() == '':
             messagebox.showerror("Error", "Please select an option first")
+            return
         fetch_image_url = "http://127.0.0.1:5000/api/fetch_image/"\
-                          + username + image_name_2.get()
-        image_file = requests.post(fetch_image_url)
-        image_file = image_file.text
+                          + username + "/" + image_name_2.get()
+        image_file = requests.get(fetch_image_url)
+        image_file = image_file.json()
+
         fetch_metrics_url = "http://127.0.0.1:5000/api/get_image_metrics/"\
-                            + username + image_name_2.get()
-        image_metrics = requests.post(fetch_metrics_url)
-        image_metrics = image_metrics.text
+                            + username + "/" + image_name_2.get()
+        image_metrics = requests.get(fetch_metrics_url)
+        image_metrics = image_metrics.json()
 
         cpu = ttk.Label(display_tab, text="CPU Time: "
                                           "{}".format(image_metrics[0]))
@@ -266,31 +299,50 @@ def data_interface_window(username='NA'):
         cpu.grid(column=2, row=6, pady=5)
         size.grid(column=2, row=7, pady=5)
 
-        histogram = image_metrics[3]
-        decoded_image = pickle.loads(image_file)
-        decoded_histo = pickle.loads(histogram)
-        image_display = Image.fromarray(decoded_image, 'RGB')
-        histo_display = Image.fromarray(decoded_histo, 'RGB')
-        image_display = image_display.resize((150, 150), Image.ANTIALIAS)
+        size_format = image_metrics[1]
+        size_list = size_format.split("x")
+
+        image_file = np.asarray(image_file)
+        reshape_arg = (int(size_list[1]), int(size_list[0]), int(size_list[2]))
+        image_file = image_file.reshape(reshape_arg)
+
+        histo_url = "http://127.0.0.1:5000/api/histo/"\
+                          + username + "/" + image_name_2.get().strip("")
+        histo = requests.get(histo_url)
+        histo = histo.json()
+        red = histo[0]
+        green = histo[1]
+        blue = histo[2]
+        figure = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot = figure.add_subplot(1, 1, 1)
+        plot.hist(red)
+        canvas = FigureCanvasTkAgg(figure, display_tab)
+        canvas.get_tk_widget().grid(row=8, column=2)
+        figure2 = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot2 = figure2.add_subplot(1, 1, 1)
+        plot2.hist(green)
+        canvas = FigureCanvasTkAgg(figure2, display_tab)
+        canvas.get_tk_widget().grid(row=9, column=2)
+        figure3 = Figure(figsize=(0.5, 0.5), dpi=100)
+        plot3 = figure3.add_subplot(1, 1, 1)
+        plot3.hist(blue)
+        canvas = FigureCanvasTkAgg(figure3, display_tab)
+        canvas.get_tk_widget().grid(row=10, column=2)
+
+        image_display = Image.fromarray(image_file, 'RGB')
+        image_display = image_display.resize((100, 100), Image.ANTIALIAS)
         render = ImageTk.PhotoImage(image_display)
         img = Label(display_tab, image=render)
         img.image = render
         img.grid(column=2, row=4, pady=5)
-
-        histo_display = histo_display.resize((100, 100), Image.ANTIALIAS)
-        render2 = ImageTk.PhotoImage(histo_display)
-        img2 = Label(display_tab, image=render2)
-        img2.image = render2
-        img2.grid(column=2, row=8, pady=5)
-
         return
 
     def refresh_list2():
         print("Refreshed")
         get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
                              + username
-        image_list = requests.post(get_image_list_url)
-        image_list = image_list.text
+        image_list = requests.get(get_image_list_url)
+        image_list = image_list.json()
         display_sel_2['values'] = image_list
         return
 
@@ -298,8 +350,9 @@ def data_interface_window(username='NA'):
         print("Refreshed")
         get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
                              + username
-        image_list = requests.post(get_image_list_url)
-        image_list = image_list.text
+        image_list = requests.get(get_image_list_url)
+        image_list = image_list.json()
+        # image_list = image_list.strip('][').split(',')
         display_sel_1['values'] = image_list
         return
 
