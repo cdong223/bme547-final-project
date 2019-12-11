@@ -36,6 +36,14 @@ def database_connection():
 
 # ----------------------------Login Screen--------------------------------
 def patient_exists(username):
+    """Checks to see if given username already exists in the database
+
+    Args:
+        username (str): username to check in database
+
+    Returns:
+        bool: True if username already registered. False otherwise.
+    """
     user = LogIn.objects.raw({"_id": username})
     if user.count() == 0:
         return False
@@ -43,6 +51,14 @@ def patient_exists(username):
 
 
 def register_user(username):
+    """Registers new username in database
+
+    Args:
+        username (str): username to register in database
+
+    Returns:
+        None
+    """
     user = LogIn(username=username).save()
     metrics = UserMetrics(username=username,
                           total_uploads=0,
@@ -55,6 +71,15 @@ def register_user(username):
 
 @app.route("/api/login", methods=["POST"])
 def login_patient():
+    """POST request to login into database
+
+    Args:
+        None
+
+    Returns:
+        JSON: Str indicating login successful or bad request if username
+              does not exists.
+    """
     username = request.get_json()
     if patient_exists(username) is False:
         return jsonify("Bad Login Request"), 400
@@ -63,6 +88,15 @@ def login_patient():
 
 @app.route("/api/new_user", methods=["POST"])
 def add_new_user():
+    """POST request to register new username in database
+
+    Args:
+        None
+
+    Returns:
+        JSON: Str indicating registration successful or bad request if username
+              already exists in database.
+    """
     username = request.get_json()
     if patient_exists(username) is True:
         return jsonify("Bad New User Request"), 400
@@ -408,6 +442,18 @@ def log_compression(img):
 
 
 def original_upload(username, filepath):
+    """Performs encoding and uploads to database along with associated data
+       metrics (upload time, processing time, histogram, size). Checks to see
+       if username is already associated with a UserData document and uploads
+       accordingly.
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -456,6 +502,17 @@ def original_upload(username, filepath):
 
 
 def histogram_equalized_upload(username, filepath):
+    """Performs histogram equalization/encoding and uploads to database along
+       with associated data metrics (upload time, processing time, histogram,
+       size).
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -493,6 +550,17 @@ def histogram_equalized_upload(username, filepath):
 
 
 def contrast_stretched_upload(username, filepath):
+    """Performs contrast stretching/encoding and uploads to database along
+       with associated data metrics (upload time, processing time, histogram,
+       size).
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -531,6 +599,17 @@ def contrast_stretched_upload(username, filepath):
 
 
 def log_compressed_upload(username, filepath):
+    """Performs log compression/encoding and uploads to database along
+       with associated data metrics (upload time, processing time, histogram,
+       size).
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -568,6 +647,17 @@ def log_compressed_upload(username, filepath):
 
 
 def inverted_image_upload(username, filepath):
+    """Performs image inversion/encoding and uploads to database along with
+       associated data metrics (upload time, processing time, histogram,
+       size).
+
+    Args:
+        username (str): username to upload to in database
+        filepath (str): filepath of image to be processed and encoded
+
+    Returns:
+        None
+    """
     # Read original image from filepath
     image = skimage.io.imread(filepath)
 
@@ -607,6 +697,17 @@ def inverted_image_upload(username, filepath):
 
 @app.route("/api/upload_images", methods=["POST"])
 def upload_images():
+    """POST request to process and upload images to the database. Receives
+       the username associated with the request, the list of images to be
+       processed, and the processing type. Calls the appropriate processing
+       pathways.
+
+    Args:
+        None
+
+    Returns:
+        JSON: Str indicating successful upload.
+    """
     # Retrieve data sent to server
     data = request.get_json()
 
@@ -643,6 +744,14 @@ def upload_images():
 
 # ----------------------------User Metrics tab----------------------------
 def get_metrics(username):
+    """Connects to database to retrive user_metrics data for given username
+
+    Args:
+        username (str): username to check in database
+
+    Returns:
+        dict: user metrics as integers
+    """
         user_entry = UserMetrics.objects.raw({"_id": username})
         user = user_entry[0]
         metrics = {
@@ -657,6 +766,14 @@ def get_metrics(username):
 
 @app.route("/api/user_metrics/<username>", methods=["GET"])
 def get_user_metrics(username):
+    """GET request to retrieve user_metrics data for given username
+
+    Args:
+        username (str): username to check in database
+
+    Returns:
+        JSON: dictionary containing user metrics as integers
+    """
     metrics = get_metrics(username)
     return jsonify(metrics)
 
