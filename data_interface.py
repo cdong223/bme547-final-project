@@ -244,7 +244,7 @@ def data_interface_window(username='NA'):
         image_file = image_file.reshape(reshape_arg)
 
         histo_url = "http://127.0.0.1:5000/api/histo/"\
-                          + username + "/" + image_name_1.get().strip("")
+                    + username + "/" + image_name_1.get().strip("")
         histo = requests.get(histo_url)
         histo = histo.json()
         red = histo[0]
@@ -307,7 +307,7 @@ def data_interface_window(username='NA'):
         image_file = image_file.reshape(reshape_arg)
 
         histo_url = "http://127.0.0.1:5000/api/histo/"\
-                          + username + "/" + image_name_2.get().strip("")
+                    + username + "/" + image_name_2.get().strip("")
         histo = requests.get(histo_url)
         histo = histo.json()
         red = histo[0]
