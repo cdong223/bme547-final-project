@@ -185,7 +185,11 @@ def data_interface_window(username='NA'):
         # selection/disable upload. If not, simply return.
         print(new_images)
         print(present_images)
-        if len(present_images.keys()) != 0:
+        flag = False
+        for values in present_images.values():
+            if len(values) > 0:
+                flag = True
+        if flag:
             images_already_present(present_images)
 
         # For filepath not present - submit post request of files.
