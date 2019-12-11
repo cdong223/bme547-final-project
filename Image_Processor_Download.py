@@ -59,7 +59,7 @@ def design_download_window():
             messagebox.showerror("Missing Image Format", "Please select an image format.")
         else:
             selected_saved_images = response
-        return
+            
         selected_saved_images.clear()
         return
 
