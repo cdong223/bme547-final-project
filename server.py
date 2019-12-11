@@ -721,6 +721,15 @@ def upload_images():
         logging.warning("Attempted upload json is wrong format")
         return jsonify(message), code
 
+    # Pull user metrics for updating
+    user_entry = UserMetrics.objects.raw({"_id": data["username"]})
+    user = user_entry[0]
+    total_uploads = user.total_uploads
+    total_hist_equal = user.total_hist_equal
+    total_contrast_stretch = user.total_contrast_stretch
+    total_log_comp = user.total_log_comp
+    total_inv_img = user.total_inv_img
+
     # Begin uploading images. Handle ZIPs separately?
     new_images = data["images"]
     for filepath in new_images:
@@ -728,21 +737,35 @@ def upload_images():
             processing_type = image_name.replace(".", "_").split("_")[-2]
             if processing_type == 'original':
                 original_upload(data["username"], filepath)
+                total_uploads += 1
             elif processing_type == 'histogramEqualized':
                 histogram_equalized_upload(data["username"], filepath)
+                total_hist_equal += 1
             elif processing_type == 'contrastStretched':
                 contrast_stretched_upload(data["username"], filepath)
+                total_contrast_stretch  += 1
             elif processing_type == 'logCompressed':
                 log_compressed_upload(data["username"], filepath)
+                total_log_comp += 1
             elif processing_type == 'invertedImage':
                 inverted_image_upload(data["username"], filepath)
+                total_inv_img += 1
             else:
                 return jsonify("Invalid Computation Type"), 400
 
+    # Update user metrics
+    metrics = UserMetrics(username=data["username"],
+                          total_uploads=total_uploads,
+                          total_hist_equal=total_hist_equal,
+                          total_contrast_stretch=total_contrast_stretch,
+                          total_log_comp=total_log_comp,
+                          total_inv_img=total_inv_img)
+    metrics.save()
+
     return jsonify("Uploaded all images successfully")
+
+
 # -----------------------------Display tab--------------------------------
-
-
 def find_histo(id, name):
     """Given the user id and the image name, return the histogram value in a
        np array
@@ -897,9 +920,9 @@ def image_list(id):
     """
     output_list = get_all_images(id)
     return jsonify(output_list[0]), 200
+
+
 # ----------------------------Download tab--------------------------------
-
-
 # ----------------------------User Metrics tab----------------------------
 def get_metrics(username):
     """Connects to database to retrive user_metrics data for given username
