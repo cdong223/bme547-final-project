@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import os
 matplotlib.use("TkAgg")
 
 
@@ -317,6 +318,7 @@ def data_interface_window(username='NA'):
         size_list = size_format.split("x")
 
         image_file = np.asarray(image_file)
+        # print(image_file)
         reshape_arg = (int(size_list[1]), int(size_list[0]), int(size_list[2]))
         image_file = image_file.reshape(reshape_arg)
 
@@ -329,17 +331,17 @@ def data_interface_window(username='NA'):
         blue = histo[2]
         figure = Figure(figsize=(0.5, 0.5), dpi=100)
         plot = figure.add_subplot(1, 1, 1)
-        plot.hist(red)
+        plot.bar(np.arange(0, len(red)), red)
         canvas = FigureCanvasTkAgg(figure, display_tab)
         canvas.get_tk_widget().grid(row=8, column=0)
         figure2 = Figure(figsize=(0.5, 0.5), dpi=100)
         plot2 = figure2.add_subplot(1, 1, 1)
-        plot2.hist(green)
+        plot2.bar(np.arange(0, len(green)), green)
         canvas = FigureCanvasTkAgg(figure2, display_tab)
         canvas.get_tk_widget().grid(row=9, column=0)
         figure3 = Figure(figsize=(0.5, 0.5), dpi=100)
         plot3 = figure3.add_subplot(1, 1, 1)
-        plot3.hist(blue)
+        plot3.bar(np.arange(0, len(blue)), blue)
         canvas = FigureCanvasTkAgg(figure3, display_tab)
         canvas.get_tk_widget().grid(row=10, column=0)
 
@@ -392,17 +394,17 @@ def data_interface_window(username='NA'):
         blue = histo[2]
         figure = Figure(figsize=(0.5, 0.5), dpi=100)
         plot = figure.add_subplot(1, 1, 1)
-        plot.hist(red)
+        plot.bar(np.arange(0, len(red)), red)
         canvas = FigureCanvasTkAgg(figure, display_tab)
         canvas.get_tk_widget().grid(row=8, column=2)
         figure2 = Figure(figsize=(0.5, 0.5), dpi=100)
         plot2 = figure2.add_subplot(1, 1, 1)
-        plot2.hist(green)
+        plot2.bar(np.arange(0, len(green)), green)
         canvas = FigureCanvasTkAgg(figure2, display_tab)
         canvas.get_tk_widget().grid(row=9, column=2)
         figure3 = Figure(figsize=(0.5, 0.5), dpi=100)
         plot3 = figure3.add_subplot(1, 1, 1)
-        plot3.hist(blue)
+        plot3.bar(np.arange(0, len(blue)), blue)
         canvas = FigureCanvasTkAgg(figure3, display_tab)
         canvas.get_tk_widget().grid(row=10, column=2)
 
@@ -415,7 +417,6 @@ def data_interface_window(username='NA'):
         return
 
     def refresh_list2():
-        print("Refreshed")
         get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
                              + username
         image_list = requests.get(get_image_list_url)
@@ -424,7 +425,6 @@ def data_interface_window(username='NA'):
         return
 
     def refresh_list1():
-        print("Refreshed")
         get_image_list_url = "http://127.0.0.1:5000/api/get_all_images/"\
                              + username
         image_list = requests.get(get_image_list_url)

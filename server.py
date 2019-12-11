@@ -790,7 +790,6 @@ def get_all_images(id):
 @app.route("/api/histo/<id>/<name>", methods=["GET"])
 def histo(id, name):
     histo = find_histo(id, name)
-    print(type(histo))
     red = histo["red"][0].tolist()
     green = histo["green"][0].tolist()
     blue = histo["blue"][0].tolist()
