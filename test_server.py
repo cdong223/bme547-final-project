@@ -164,7 +164,7 @@ def test_is_first_upload(stored_username, username, expected):
 
 
 @pytest.mark.parametrize("array, expected", [
-    (np.array((1, 1, 1)), 1061)
+    (np.array((1, 1, 1)), 2101)
 ])
 def test_encode_array(array, expected):
     from server import encode_array
