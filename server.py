@@ -209,13 +209,13 @@ def is_first_upload(username):
 
 def encode_array(array):
     # Encoding of 3darray to save in database
-    encoded_array = Binary(pickle.dumps(array, protocol=3))
+    encoded_array = base64.b64encode(array)
     return encoded_array
 
 
 def decode_array(array):
     # Decoding of 3darray to use for processing
-    decoded_array = pickle.loads(array)
+    decoded_array = base64.b64encode(array)
     return decoded_array
 
 
