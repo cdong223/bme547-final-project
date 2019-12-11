@@ -743,7 +743,7 @@ def upload_images():
                 total_hist_equal += 1
             elif processing_type == 'contrastStretched':
                 contrast_stretched_upload(data["username"], filepath)
-                total_contrast_stretch  += 1
+                total_contrast_stretch += 1
             elif processing_type == 'logCompressed':
                 log_compressed_upload(data["username"], filepath)
                 total_log_comp += 1
