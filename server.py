@@ -64,6 +64,7 @@ def get_all_images(id):
     list = [name, image]
     return list
 
+
 @app.route("/api/histo/<id>/<name>", methods=["GET"])
 def histo(id, name):
     histo = find_histo(id, name)
@@ -73,6 +74,7 @@ def histo(id, name):
     blue = histo["blue"][0].tolist()
     output = [red, green, blue]
     return jsonify(output), 200
+
 
 @app.route("/api/get_image_metrics/<id>/<name>", methods=["GET"])
 def get_image_metrics(id, name):
