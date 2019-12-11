@@ -219,6 +219,16 @@ def decode_array(array):
     return decoded_array
 
 
+def encode_dict(dictionary):
+    encoded_dict = Binary(pickle.dumps(dictionary, protocol=3))
+    return encoded_dict
+
+
+def decode_dict(dictionary):
+    decoded_dict = pickle.loads(dictionary)
+    return decoded_dict
+
+
 def calc_process_time(t1, t2):
     return str(t2 - t1)
 
@@ -271,7 +281,7 @@ def original_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = encode_array(hist_data)
+    hist_encode = encode_dict(hist_data)
 
     # Check if previous images exist
     if is_first_upload(username):
@@ -320,7 +330,7 @@ def histogram_equalized_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = encode_array(hist_data)
+    hist_encode = encode_dict(hist_data)
 
     # Save image to database
     UserData.objects.raw(
@@ -358,7 +368,7 @@ def contrast_stretched_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = encode_array(hist_data)
+    hist_encode = encode_dict(hist_data)
 
     # Save image to database
     UserData.objects.raw(
@@ -395,7 +405,7 @@ def log_compressed_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     hist_data = pixel_histogram(image)
-    hist_encode = encode_array(hist_data)
+    hist_encode = encode_dict(hist_data)
 
     # Save image to database
     UserData.objects.raw(
@@ -430,7 +440,7 @@ def inverted_image_upload(username, filepath):
     # Use each color spectrum for analysis via processing, then
     # concatenate back together with img = np.dstack(red, green, blue)
     inv_hist = pixel_histogram(inv_image)
-    hist_encoded = encode_array(inv_hist)
+    hist_encoded = encode_dict(inv_hist)
 
     # Get date and time
     upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
