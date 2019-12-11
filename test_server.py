@@ -270,58 +270,58 @@ def test_histogram_equalized_upload(username, filepath, expected):
     LogIn.objects.raw({"_id": username}).delete()
 
 
-# @pytest.mark.parametrize("username, filepath, expected", [
-#     ('sm642',
-#      'Cat.png',
-#      'Cat_contrastStretched.png')
-# ])
-# def test_contrast_stretched_upload(username, filepath, expected):
-#     from server import contrast_stretched_upload
-#     user = LogIn(username=username)
-#     user.save()
-#     user_data = UserData(username=user,
-#                          image_name=['.'],
-#                          image=['.'],
-#                          processing_time=['.'],
-#                          image_size=['.'],
-#                          hist_data=['.'],
-#                          upload_date=['.'])
-#     user_data.save()
-#     contrast_stretched_upload(username, filepath)
-#     users = UserData.objects.raw({"_id": username})
-#     stored_name = ''
-#     for user in users:
-#         stored_name = user.image_name
-#     assert expected == stored_name[1]
-#     UserData.objects.raw({"_id": username}).delete()
-#     LogIn.objects.raw({"_id": username}).delete()
+@pytest.mark.parametrize("username, filepath, expected", [
+    ('sm642',
+     'Cat.png',
+     'Cat_contrastStretched.png')
+])
+def test_contrast_stretched_upload(username, filepath, expected):
+    from server import contrast_stretched_upload
+    user = LogIn(username=username)
+    user.save()
+    user_data = UserData(username=user,
+                         image_name=['.'],
+                         image=['.'],
+                         processing_time=['.'],
+                         image_size=['.'],
+                         hist_data=['.'],
+                         upload_date=['.'])
+    user_data.save()
+    contrast_stretched_upload(username, filepath)
+    users = UserData.objects.raw({"_id": username})
+    stored_name = ''
+    for user in users:
+        stored_name = user.image_name
+    assert expected == stored_name[1]
+    UserData.objects.raw({"_id": username}).delete()
+    LogIn.objects.raw({"_id": username}).delete()
 
 
-# @pytest.mark.parametrize("username, filepath, expected", [
-#     ('sm642',
-#      'Cat.png',
-#      'Cat_logCompressed.png')
-# ])
-# def test_log_compressed_upload(username, filepath, expected):
-#     from server import log_compressed_upload
-#     user = LogIn(username=username)
-#     user.save()
-#     user_data = UserData(username=user,
-#                          image_name=['.'],
-#                          image=['.'],
-#                          processing_time=['.'],
-#                          image_size=['.'],
-#                          hist_data=['.'],
-#                          upload_date=['.'])
-#     user_data.save()
-#     log_compressed_upload(username, filepath)
-#     users = UserData.objects.raw({"_id": username})
-#     stored_name = ''
-#     for user in users:
-#         stored_name = user.image_name
-#     assert expected == stored_name[1]
-#     UserData.objects.raw({"_id": username}).delete()
-#     LogIn.objects.raw({"_id": username}).delete()
+@pytest.mark.parametrize("username, filepath, expected", [
+    ('sm642',
+     'Cat.png',
+     'Cat_logCompressed.png')
+])
+def test_log_compressed_upload(username, filepath, expected):
+    from server import log_compressed_upload
+    user = LogIn(username=username)
+    user.save()
+    user_data = UserData(username=user,
+                         image_name=['.'],
+                         image=['.'],
+                         processing_time=['.'],
+                         image_size=['.'],
+                         hist_data=['.'],
+                         upload_date=['.'])
+    user_data.save()
+    log_compressed_upload(username, filepath)
+    users = UserData.objects.raw({"_id": username})
+    stored_name = ''
+    for user in users:
+        stored_name = user.image_name
+    assert expected == stored_name[1]
+    UserData.objects.raw({"_id": username}).delete()
+    LogIn.objects.raw({"_id": username}).delete()
 
 
 @pytest.mark.parametrize("t1, t2, expected", [
